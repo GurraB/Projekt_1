@@ -13,4 +13,8 @@
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
     </style>
 
+    <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark">
+
+    </style>
+
 </resources>
