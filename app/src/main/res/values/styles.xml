@@ -14,7 +14,8 @@
     </style>
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark">
-
+        <item name="android:spinnerDropDownItemStyle">@style/Theme.AppCompat.Light</item>
+        <item name="spinnerDropDownItemStyle">@style/Theme.AppCompat.Light</item>
     </style>
 
 </resources>

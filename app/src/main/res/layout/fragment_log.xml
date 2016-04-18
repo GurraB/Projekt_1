@@ -4,14 +4,16 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingTop="@dimen/recycler_row_padding"
+    android:paddingBottom="@dimen/recycler_row_padding"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     tools:context="se.mah.projekt_1.LogFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
     </android.support.v7.widget.RecyclerView>
 

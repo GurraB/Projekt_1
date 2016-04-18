@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">Projekt_1</string>
+    <string name="app_name">In time</string>
+    <string name="open_drawer_string">open drawer</string>
+    <string name="close_drawer_string">close drawer</string>
+    <string name="refresh">Refresh</string>
+    <string name="sort">Sort</string>
+    <string name="sort_oldest_first">Oldest first</string>
+    <string name="sort_newest_first">Newest first</string>
+    <string name="log_in_username">Log in with user credentials</string>
+    <string name="log_in_card">Log in using card</string>
+    <string name="stamp_in">Stamp in using phone</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Log in</string>
 </resources>
