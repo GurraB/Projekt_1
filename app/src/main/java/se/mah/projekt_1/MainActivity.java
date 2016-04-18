@@ -228,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         toolbar.setTitle(controller.getDateFrom().toStringNoYear() + " - " + controller.getDateTo().toStringNoYear());
     }
 
+
+    //can
     /**
      * NavDrawerListener handles the events for the drawer, onClick for buttons and the datepicker dialog events.
      */
