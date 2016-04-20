@@ -20,12 +20,7 @@ public class ApiClientTest extends TestCase {
     }
 
     public void testDoInBackground() throws Exception {
-        User user;
-        ApiClient client = new ApiClient(new MainActivity(), user = new User("CANCER"));
-        user.setKey(new RfidKey("247615E"));
-        ArrayList<LinkedHashMap<String, Long>> got = client.doInBackground(new String[]{"/between"});
-        Log.v("SADSAJKFSMDNLKDGN", got.toArray().toString());
-        Assert.assertNotNull(got);
+
     }
 
     public void testOnProgressUpdate() throws Exception {

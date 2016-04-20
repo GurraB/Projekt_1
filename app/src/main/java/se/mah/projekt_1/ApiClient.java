@@ -20,7 +20,7 @@ import java.util.Map;
 public class ApiClient extends AsyncTask<String, String, ArrayList<LinkedHashMap<String, Object>>>{
 
     private User user;
-    private String url = "http://192.168.1.51:8080/android";    //Server address
+    private String url = "http://195.178.224.74:44344/android";    //Server address
     private RestTemplate restTemplate;
     private Controller controller;
     private long from = 0, to = 0;

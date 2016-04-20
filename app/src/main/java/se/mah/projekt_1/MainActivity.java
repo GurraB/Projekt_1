@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private MenuItem sort;
     private ActionHandler drawerListener;
     private LogFragment logFragment;
+    private GraphFragment graphFragment;
     private ArrayList<AndroidStamp> dataSet = new ArrayList<>();
     private Animation loadingAnimation;
     private Controller controller;
@@ -157,8 +158,9 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private void setUpViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(logFragment = LogFragment.newInstance(dataSet), "Log");
-        adapter.addFragment(new GraphFragment(), "Graphs");
+        adapter.addFragment(graphFragment = GraphFragment.newInstance(controller), "Graphs");
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(drawerListener);
     }
 
     /**
@@ -226,6 +228,10 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
 
     public void updateDateSpan() {
         toolbar.setTitle(controller.getDateFrom().toStringNoYear() + " - " + controller.getDateTo().toStringNoYear());
+    }
+
+    public void loadGraph() {
+        graphFragment.showGraph();
     }
 
     /**

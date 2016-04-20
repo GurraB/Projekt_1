@@ -116,4 +116,8 @@ public class CalendarFormatter {
     public String toStringNoYearWithTimeWithSeconds() {
         return toStringNoYearWithTime() + ":" + second;
     }
+
+    public String toStringTime() {
+        return (hour.length() == 2 ? "" : "0") + hour + ":" + (minute.length() == 2 ? "" : "0") + minute;
+    }
 }
