@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private TextView userName;
     private EditText etFrom;
     private EditText etTo;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         setUpViewPager();
         setUpNavDrawer();
         tabLayout.setupWithViewPager(viewPager);
-        userName.setText(controller.getUser().getName());
     }
 
     private void findComponents() {
@@ -97,10 +98,12 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         left_drawer = (RelativeLayout) findViewById(R.id.left_drawer);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         tabLayout = (TabLayout) findViewById(R.id.tab);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.v("MENU CREATED", "CANCEEEER");
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.mainmenu, menu);
         refreshItem = menu.findItem(R.id.refresh_button);
@@ -111,11 +114,16 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh_button:
-                startLoadingAnimation(refreshItem);
+                refreshItem = item;
                 controller.getServerData(ApiClient.BETWEEN);
                 break;
             case R.id.sort_button:
                 break;
+            case R.id.sort_newest_first:
+                controller.sortDescending();
+                break;
+            case R.id.sort_oldest_first:
+                controller.sortAscending();
         }
         return true;
     }
@@ -150,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         drawer.closeDrawer(left_drawer);
         etTo.setOnClickListener(drawerListener);
         etFrom.setOnClickListener(drawerListener);
+        userName.setText(controller.getUser().getName());
     }
 
     /**
@@ -163,33 +172,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         viewPager.addOnPageChangeListener(drawerListener);
     }
 
-    /**
-     * Start the loading animation
-     * @param item menuItem be spinnin'
-     */
-    public void startLoadingAnimation(MenuItem item) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        actionView = (ImageView) inflater.inflate(R.layout.refresh_action_view, null);  //ActionView required to apply animation to
-        loadingAnimation = AnimationUtils.loadAnimation(this, R.anim.refresh_spin);
-        item.setActionView(actionView);
-        actionView.startAnimation(loadingAnimation);
-    }
-
-    /**
-     * Stops the loading animation when the data has finished loading
-     */
-    public void stopLoadingAnimation() {
-        try {
-            loadingAnimation.cancel();
-            actionView.clearAnimation();
-            refreshItem.setActionView(null);
-        } catch (NullPointerException exception) {
-            Log.v("MAINACTIVITY", "LOADINGANIMATION IS NULL");
-        } catch (RuntimeException exception) {
-            Log.v("MAINACTIVITY", "CAN'T TOUCH THIS");
-        }
-    }
-
     public void setEtFrom(String from) {
         etFrom.setText(from);
     }
@@ -198,22 +180,24 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         etTo.setText(to);
     }
 
+    public ActionHandler getActionHandler() {
+        return drawerListener;
+    }
+
     /**
      * Shows a snackbar displaying that the server can't be reached
-     * @param type What type of data that couldn't be retrieved
-     * @param button true if there should be a button to retry
      */
-    public void showConnectionErrorMessage(final String type, boolean button) {
+    @Override
+    public void showConnectionErrorMessage(final String message, boolean retry) {
         Snackbar snackbar = Snackbar
-                .make(tabLayout, "Can't connect to Server!", Snackbar.LENGTH_LONG);
-        if(button)
-                snackbar.setAction("RETRY", new View.OnClickListener() {
+                .make(tabLayout, message, Snackbar.LENGTH_LONG);
+        if(retry)
+            snackbar.setAction("RETRY", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //startLoadingAnimation(refreshItem);
-                        //getServerData(type);
-                    }
-                });
+                       controller.getServerData(ApiClient.BETWEEN);
+                }
+            });
         snackbar.show();
     }
 
@@ -224,6 +208,29 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     @Override
     public void dataRecieved(Object data) {
         setDataSet(controller.parseTimeStamps((ArrayList<LinkedHashMap<String, Object>>) data));
+    }
+
+    @Override
+    public void startLoadingAnimation() {
+        if(refreshItem != null) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            actionView = (ImageView) inflater.inflate(R.layout.refresh_action_view, null);  //ActionView required to apply animation to
+            loadingAnimation = AnimationUtils.loadAnimation(this, R.anim.refresh_spin);
+            refreshItem.setActionView(actionView);
+            actionView.startAnimation(loadingAnimation);
+        }
+    }
+
+    public void stopLoadingAnimation() {
+        try {
+            loadingAnimation.cancel();
+            actionView.clearAnimation();
+            refreshItem.setActionView(null);
+        } catch (NullPointerException exception) {
+            Log.v("MAINACTIVITY", "LOADINGANIMATION IS NULL");
+        } catch (RuntimeException exception) {
+            Log.v("MAINACTIVITY", "CAN'T TOUCH THIS");
+        }
     }
 
     public void updateDateSpan() {

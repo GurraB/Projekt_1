@@ -3,6 +3,7 @@ package se.mah.projekt_1;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,6 +22,7 @@ public class LogFragment extends Fragment {
     private static ArrayList<AndroidStamp> dataSet;
     private RecyclerView recyclerView;
     private View rootView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Constructor
@@ -52,6 +54,11 @@ public class LogFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new RecyclerViewDivider(10));
         recyclerView.setAdapter(new RecyclerViewAdapter(dataSet));
+
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(((MainActivity)getContext()).getActionHandler());
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+
         Log.v("LOGFRAGMENT", "ONCREATEVIEW");
         return rootView;
     }
@@ -62,6 +69,7 @@ public class LogFragment extends Fragment {
      */
     public void setRecyclerViewData(ArrayList<AndroidStamp> androidStamps) {
         this.dataSet = androidStamps;
+        swipeRefreshLayout.setRefreshing(false);
         recyclerView.swapAdapter(new RecyclerViewAdapter(dataSet), false);
     }
 }

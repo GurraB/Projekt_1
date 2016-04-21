@@ -1,5 +1,9 @@
 package se.mah.projekt_1;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -8,7 +12,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -20,6 +26,7 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     private EditText etPassword;
     private MenuItem logInButton;
     private Controller controller;
+    private LinearLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,7 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
         toolbar = (Toolbar) findViewById(R.id.standard_log_in_app_bar);
         etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
+        layout = (LinearLayout) findViewById(R.id.standard_login_layout);
     }
 
     @Override
@@ -59,6 +67,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
             String password = etPassword.getText().toString();
             Log.v("USERNAME", username);
             Log.v("PASSWORD", password);
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(layout.getWindowToken(), 0);
             controller.login(username, password);
         }
         return true;
@@ -74,6 +84,17 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     }
 
     public void onLoginFail() {
+        AlertDialog alertDialog = new LoginInFailDialog(this).create().create();
+        alertDialog.show();
+    }
+
+    @Override
+    public void dataRecieved(Object data) {
+        controller.parseLoginInformation((ArrayList<LinkedHashMap<String, Object>>) data);
+    }
+
+    @Override
+    public void startLoadingAnimation() {
 
     }
 
@@ -82,7 +103,16 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     }
 
     @Override
-    public void dataRecieved(Object data) {
-        controller.parseLoginInformation((ArrayList<LinkedHashMap<String, Object>>) data);
+    public void showConnectionErrorMessage(String message, boolean retry) {
+        Snackbar snackbar = Snackbar
+                .make(layout, message, Snackbar.LENGTH_LONG);
+        if(retry)
+            snackbar.setAction("RETRY", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    controller.getServerData(ApiClient.LOGIN);
+                }
+            });
+        snackbar.show();
     }
 }

@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 
@@ -29,6 +30,7 @@ public class Controller {
     private User user;
     private AsyncTaskCompatible activity;
     private float weightSum = 0;
+    private boolean sortAscending = true;
 
     public Controller(AsyncTaskCompatible activity) {
         this.activity = activity;
@@ -37,6 +39,7 @@ public class Controller {
     public Controller() {}
 
     public void getServerData(String type) {
+        activity.startLoadingAnimation();
         switch (type) {
             case ApiClient.ALL:
                 new ApiClient(this, user).execute(ApiClient.ALL);
@@ -92,18 +95,22 @@ public class Controller {
 
     public User createUser(ArrayList<LinkedHashMap<String, Object>> result) {
         User user = null;
-        LinkedHashMap<String, Object> keyObject;
-        String firstname, lastname, key, id;
-        try {
-            LinkedHashMap<String, Object> userInformation = result.get(0);
-            firstname = (String) userInformation.get("firstName");
-            lastname = (String) userInformation.get("lastName");
-            keyObject = (LinkedHashMap<String, Object>) userInformation.get("rfid");
-            key = (String) keyObject.get("id");
-            id = (String) userInformation.get("id");
-            user = new User(firstname, lastname, new RfidKey(key), id);
-        } catch (NullPointerException exception) {
-            Log.v("CREATEUSER", "NULLPOINTEREXCEPTION");
+        if(result.isEmpty())
+            ((StandardLogInActivity)activity).onLoginFail();
+        else {
+            LinkedHashMap<String, Object> keyObject;
+            String firstname, lastname, key, id;
+            try {
+                LinkedHashMap<String, Object> userInformation = result.get(0);
+                firstname = (String) userInformation.get("firstName");
+                lastname = (String) userInformation.get("lastName");
+                keyObject = (LinkedHashMap<String, Object>) userInformation.get("rfid");
+                key = (String) keyObject.get("id");
+                id = (String) userInformation.get("id");
+                user = new User(firstname, lastname, new RfidKey(key), id);
+            } catch (NullPointerException exception) {
+                Log.v("CREATEUSER", "NULLPOINTEREXCEPTION");
+            }
         }
         return user;
     }
@@ -179,21 +186,22 @@ public class Controller {
         }
         Log.v("AMOUNT", Integer.toString(i));
         dataSet = androidStamps;
+        if(!sortAscending)
+            sortDescending();
         return dataSet;
     }
     
     public void parseLoginInformation(ArrayList<LinkedHashMap<String, Object>> retValue) {
         user = createUser(retValue);
-        ((StandardLogInActivity) activity).stopLoadingAnimation();
-        startNewActivity((StandardLogInActivity) activity, MainActivity.class, user);
-        ((StandardLogInActivity) activity).finish();
+        if(user != null) {
+            startNewActivity((StandardLogInActivity) activity, MainActivity.class, user);
+            ((StandardLogInActivity) activity).finish();
+        }
     }
     
     public void finishedLoading(ArrayList<LinkedHashMap<String, Object>> retValue) {
+        activity.stopLoadingAnimation();
         activity.dataRecieved(retValue);
-    }
-
-    public void stopLoadingAnimation() {
     }
 
     public void showConnectionErrorMessage(String string, boolean b) {
@@ -201,85 +209,6 @@ public class Controller {
 
     public User getUser() {
         return user;
-    }
-
-    private TextView[] getGraphViews(Context context, AndroidStamp[] stamps) {
-
-        /*Calendar calendarNow = Calendar.getInstance();
-
-        //int startMinute = (stamps[0].getDate().get(Calendar.HOUR_OF_DAY) - 1) * 60;             //what hour to start the graph
-        //int endMinute = (stamps[stamps.length - 1].getDate().get(Calendar.HOUR_OF_DAY) + 1) * 60;   //what hour to end the graph
-
-        //double[] blocks = new double[stamps.length + 1];
-        double[] blocks = new double[stamps.length];
-        //double sum = startMinute;
-        double sum = 0;
-        for (int i = 0; i < stamps.length; i++) {
-            Calendar cal = stamps[i].getDate();
-            if(i == 0)
-                blocks[i] = (cal.get(Calendar.HOUR_OF_DAY) * 60) + cal.get(Calendar.MINUTE);  //create a block
-            else
-                blocks[i] = (cal.get(Calendar.HOUR_OF_DAY) * 60) + cal.get(Calendar.MINUTE) - blocks[0];  //create a block
-            sum += blocks[i];   //sum of all blocks before this one + this one
-        }
-        //blocks[blocks.length - 1] = endMinute - sum;    //final block
-        if(stamps[stamps.length - 1].isCheckIn()) {
-            Calendar cal2 = Calendar.getInstance();
-            cal2.set(Calendar.YEAR, stamps[stamps.length - 1].getDate().get(Calendar.YEAR));
-            cal2.set(Calendar.MONTH, stamps[stamps.length - 1].getDate().get(Calendar.MONTH));
-            cal2.set(Calendar.DAY_OF_MONTH, stamps[stamps.length - 1].getDate().get(Calendar.DAY_OF_MONTH));
-            cal2.set(Calendar.HOUR_OF_DAY, 23);
-            cal2.set(Calendar.MINUTE, 59);
-            if(calendarNow.before(cal2))
-                blocks[blocks.length - 1] = (calendarNow.get(Calendar.HOUR_OF_DAY) * 60) + calendarNow.get(Calendar.MINUTE) - sum;
-            else
-                blocks[blocks.length - 1] = (cal2.get(Calendar.HOUR_OF_DAY) * 60) + cal2.get(Calendar.MINUTE) - sum;
-            sum+= blocks[blocks.length - 1];
-        }
-
-
-
-
-        TextView[] textViews = new TextView[blocks.length];
-        for (int i = 0; i < textViews.length; i++) {
-            textViews[i] = new TextView(context);
-            textViews[i].setLayoutParams(
-                    new LinearLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            (float) blocks[i]));     //match parent in width, height is the block size
-            /*if(i != 0 && i != textViews.length - 1) {
-                CalendarFormatter formatter = new CalendarFormatter(stamps[i - 1].getDate());
-                textViews[i].setGravity(Gravity.END);
-                textViews[i].setText(formatter.toStringTime());
-                if (i % 2 == 1) {
-                    textViews[i].setBackgroundResource(R.color.colorPrimaryLight);  //color the ones that is between stamp in and stamp out
-                    textViews[i].setGravity(Gravity.START);
-                    textViews[i].setText(formatter.toStringTime());
-                }
-            }*/
-            /*else if(i == 0) {
-                textViews[i].setGravity(Gravity.END);
-                textViews[i].setText(startMinute / 60 + ":" + "00");
-            }
-            else if(i == textViews.length - 1) {
-                CalendarFormatter formatter = new CalendarFormatter(stamps[i - 1].getDate());
-                textViews[i].setGravity(Gravity.END);
-                textViews[i].setText(formatter.toStringTime());
-            }*/
-
-                /*CalendarFormatter formatter = new CalendarFormatter(stamps[i].getDate());
-                textViews[i].setGravity(Gravity.END);
-                //textViews[i].setText(formatter.toStringTime());
-                if (i % 2 == 0) {
-                    textViews[i].setBackgroundResource(R.color.colorPrimaryLight);  //color the ones that is between stamp in and stamp out
-                    textViews[i].setGravity(Gravity.START);
-                    //textViews[i].setText(formatter.toStringTime());
-            }
-            weightSum = (float) sum;
-        }
-        return textViews;*/
-        return null;
     }
 
     public ArrayList<WeekViewEvent> getGraphEvents(Calendar selectedDay) {
@@ -323,5 +252,17 @@ public class Controller {
                     androidStamp.getDate().get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH))
                 stamps.add(androidStamp);
         return stamps;
+    }
+
+    public void sortAscending() {
+        Collections.sort(dataSet, new AndroidStampSortAscending());
+        sortAscending = true;
+        ((MainActivity)activity).setDataSet(dataSet);
+    }
+
+    public void sortDescending() {
+        Collections.sort(dataSet, new AndroidStampSortDescending());
+        sortAscending = false;
+        ((MainActivity)activity).setDataSet(dataSet);
     }
 }

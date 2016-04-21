@@ -100,12 +100,12 @@ public class ApiClient extends AsyncTask<String, String, ArrayList<LinkedHashMap
                     retValue.add(retValueLogin);
                     break;
                 default:
-                    controller.stopLoadingAnimation();
+                    controller.showConnectionErrorMessage("Invalid request", false);
                     controller.showConnectionErrorMessage(strings[0], false);
                     break;
             }
         } catch (RestClientException exception) {
-            controller.stopLoadingAnimation();
+            controller.showConnectionErrorMessage("RestClientException", true);
             controller.showConnectionErrorMessage(strings[0], true);
         }
         return retValue;
@@ -135,7 +135,6 @@ public class ApiClient extends AsyncTask<String, String, ArrayList<LinkedHashMap
     @Override
     protected void onPostExecute(ArrayList<LinkedHashMap<String, Object>> retValue) {
         super.onPostExecute(retValue);
-        controller.stopLoadingAnimation();
         controller.finishedLoading(retValue);
     }
 }

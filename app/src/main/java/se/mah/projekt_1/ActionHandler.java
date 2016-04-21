@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -16,7 +17,7 @@ import java.util.Calendar;
 /**
  * Created by Gustaf on 15/04/2016.
  */
-public class ActionHandler extends ActionBarDrawerToggle implements View.OnClickListener, DatePickerDialog.OnDateSetListener, ViewPager.OnPageChangeListener {
+public class ActionHandler extends ActionBarDrawerToggle implements View.OnClickListener, DatePickerDialog.OnDateSetListener, ViewPager.OnPageChangeListener, SwipeRefreshLayout.OnRefreshListener {
 
     private CalendarFormatter dateFrom;
     private CalendarFormatter dateTo;
@@ -115,5 +116,10 @@ public class ActionHandler extends ActionBarDrawerToggle implements View.OnClick
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    @Override
+    public void onRefresh() {
+        controller.getServerData(ApiClient.BETWEEN);
     }
 }

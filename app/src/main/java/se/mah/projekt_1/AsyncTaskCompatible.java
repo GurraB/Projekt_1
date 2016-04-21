@@ -8,4 +8,7 @@ import java.util.LinkedHashMap;
  */
 public interface AsyncTaskCompatible {
     void dataRecieved(Object data);
+    void startLoadingAnimation();
+    void stopLoadingAnimation();
+    void showConnectionErrorMessage(String message, boolean retry);
 }

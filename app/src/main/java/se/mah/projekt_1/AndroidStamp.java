@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 
 /**
@@ -12,7 +13,7 @@ import java.util.GregorianCalendar;
  * A timestamp containing time and whether it is check out or in
  */
 
-public class AndroidStamp implements Comparable {
+public class AndroidStamp {
     private Calendar date;
     private boolean checkIn;
 
@@ -56,18 +57,5 @@ public class AndroidStamp implements Comparable {
      */
     public void setCheckIn(boolean checkIn) {
         this.checkIn = checkIn;
-    }
-
-
-    @Override
-    public int compareTo(Object o) {
-        if(o instanceof AndroidStamp) {
-            Calendar calendar = (Calendar) o;
-            if(getDate().before(calendar))
-                return 1;
-            else
-                return -1;
-        }
-        return -2;
     }
 }
