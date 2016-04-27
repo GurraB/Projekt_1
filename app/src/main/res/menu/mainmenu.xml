@@ -6,7 +6,7 @@
         android:id="@+id/refresh_button"
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_refresh_white_24dp"
+        android:icon="@drawable/ic_refresh_white3_24dp"
         android:title="@string/refresh" />
 
     <item

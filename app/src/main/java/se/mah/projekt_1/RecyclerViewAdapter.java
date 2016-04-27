@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -16,9 +18,18 @@ import java.util.Calendar;
  */
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
 
+    private int[] colors = {R.color.c0,
+            R.color.c1,
+            R.color.c2,
+            R.color.c3,
+            R.color.c4,
+            R.color.c6,
+            R.color.c5,};
+
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
         private View itemView;
+        public TextView textViewColor;
         public TextView textViewDate;
         public TextView textViewCheckIn;
 
@@ -27,6 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             this.itemView = itemView;
             textViewDate = (TextView) itemView.findViewById(R.id.row_textview);
             textViewCheckIn = (TextView) itemView.findViewById(R.id.check_in_textview);
+            textViewColor = (TextView) itemView.findViewById(R.id.tvColor);
         }
     }
 
@@ -47,6 +59,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         CalendarFormatter formatter = new CalendarFormatter(dataSet.get(position).getDate());
         holder.textViewDate.setText(formatter.toStringNoYearWithTime());
         holder.textViewCheckIn.setText((dataSet.get(position).isCheckIn() ? "Check in" : "Check out"));
+        holder.textViewColor.setBackgroundResource(colors[dataSet.get(position).getDate().get(Calendar.DAY_OF_WEEK)]);
     }
 
     @Override

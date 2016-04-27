@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:id="@+id/tvColor"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/row_textview" />
 
     <TextView
         android:id="@+id/row_textview"
@@ -9,13 +17,16 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"
         android:layout_gravity="left|top"
-        android:padding="5dp"/>
+        android:padding="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/tvColor" />
     <TextView
         android:id="@+id/check_in_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Check in"
-        android:layout_gravity="right|bottom"
-        android:padding="5dp"/>
+        android:padding="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
 
-</android.support.v7.widget.CardView>
+</RelativeLayout>

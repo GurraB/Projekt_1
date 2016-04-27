@@ -25,6 +25,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,7 +40,7 @@ import java.util.LinkedHashMap;
  * The activity after the login. This acts as a Controller for the LogFragment and the GraphFragment
  */
 
-public class MainActivity extends AppCompatActivity implements AsyncTaskCompatible{
+public class MainActivity extends AppCompatActivity implements AsyncTaskCompatible {
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -64,11 +65,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         controller = new Controller(this);
-        if(savedInstanceState != null)
+        if (savedInstanceState != null)
             controller.parseSavedInstance(savedInstanceState);
         setContentView(R.layout.activity_main);
         initComponents();
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             controller.getServerData(ApiClient.BETWEEN);
         }
     }
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private void initComponents() {
         //om den inte har bundle?
         Bundle userInformation = getIntent().getBundleExtra("userInformation");
-        if(userInformation != null)
+        if (userInformation != null)
             controller.parseUserInformation(userInformation);
         else
             Log.v("MAINACTIVITY", "BUNDLE IS NULL");
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         setUpViewPager();
         setUpNavDrawer();
         tabLayout.setupWithViewPager(viewPager);
+        setViewPagerIcons();
     }
 
     private void findComponents() {
@@ -172,6 +174,22 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         viewPager.addOnPageChangeListener(drawerListener);
     }
 
+    private void setViewPagerIcons() {
+        RelativeLayout logView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.tab_layout_title_view, null);
+        TextView logTitle = (TextView) logView.findViewById(R.id.tab_title);
+        logTitle.setText("LOG");
+        ImageView logTitle_icon = (ImageView) logView.findViewById(R.id.tab_icon);
+        logTitle_icon.setImageDrawable(getApplicationContext().getDrawable(R.drawable.ic_list_white_24dp));
+        tabLayout.getTabAt(0).setCustomView(logView);
+
+        RelativeLayout graphView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.tab_layout_title_view, null);
+        TextView graphTitle = (TextView) graphView.findViewById(R.id.tab_title);
+        graphTitle.setText("GRAPH");
+        ImageView graphTitle_icon = (ImageView) graphView.findViewById(R.id.tab_icon);
+        graphTitle_icon.setImageDrawable(getApplicationContext().getDrawable(R.drawable.ic_timeline_white_24dp));
+        tabLayout.getTabAt(1).setCustomView(graphView);
+    }
+
     public void setEtFrom(String from) {
         etFrom.setText(from);
     }
@@ -191,11 +209,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     public void showConnectionErrorMessage(final String message, boolean retry) {
         Snackbar snackbar = Snackbar
                 .make(tabLayout, message, Snackbar.LENGTH_LONG);
-        if(retry)
+        if (retry)
             snackbar.setAction("RETRY", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                       controller.getServerData(ApiClient.BETWEEN);
+                @Override
+                public void onClick(View view) {
+                    controller.getServerData(ApiClient.BETWEEN);
                 }
             });
         snackbar.show();
@@ -212,25 +230,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
 
     @Override
     public void startLoadingAnimation() {
-        if(refreshItem != null) {
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            actionView = (ImageView) inflater.inflate(R.layout.refresh_action_view, null);  //ActionView required to apply animation to
-            loadingAnimation = AnimationUtils.loadAnimation(this, R.anim.refresh_spin);
-            refreshItem.setActionView(actionView);
-            actionView.startAnimation(loadingAnimation);
-        }
+        logFragment.startLoadingAnim();
     }
 
     public void stopLoadingAnimation() {
-        try {
-            loadingAnimation.cancel();
-            actionView.clearAnimation();
-            refreshItem.setActionView(null);
-        } catch (NullPointerException exception) {
-            Log.v("MAINACTIVITY", "LOADINGANIMATION IS NULL");
-        } catch (RuntimeException exception) {
-            Log.v("MAINACTIVITY", "CAN'T TOUCH THIS");
-        }
+        logFragment.stopLoadingAnim();
     }
 
     public void updateDateSpan() {
@@ -240,118 +244,4 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     public void loadGraph() {
         graphFragment.showGraph();
     }
-
-    /**
-     * NavDrawerListener handles the events for the drawer, onClick for buttons and the datepicker dialog events.
-     */
-/*    private class NavDrawerListener extends ActionBarDrawerToggle implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
-
-        private CalendarFormatter dateFrom;
-        private CalendarFormatter tempDateFrom;
-        private CalendarFormatter dateTo;
-        private CalendarFormatter tempDateTo;
-        private EditText eTFrom;
-        private EditText eTTo;
-        private Activity activity;
-        private DatePicker dPFrom;
-        private DatePicker dPTo;
-
-        /**
-         * Constructor
-         * @param activity the activity
-         * @param drawerLayout the drawerLayout to apply
-         * @param toolbar the activity toolbar
-         * @param openDrawerContentDescRes content description on open
-         * @param closeDrawerContentDescRes content description on open
-         * @param tempDateFrom current dateFrom
-         * @param tempDateTo current dateTo
-         */
-/*        public NavDrawerListener(Activity activity, DrawerLayout drawerLayout, Toolbar toolbar, int openDrawerContentDescRes, int closeDrawerContentDescRes, CalendarFormatter tempDateFrom, CalendarFormatter tempDateTo) {
-            super(activity, drawerLayout, toolbar, openDrawerContentDescRes, closeDrawerContentDescRes);
-            this.activity = activity;
-            this.tempDateFrom = tempDateFrom;
-            this.tempDateTo = tempDateTo;
-            eTFrom = (EditText) findViewById(R.id.nav_drawer_from);
-            eTTo = (EditText) findViewById(R.id.nav_drawer_to);
-            eTFrom.setText(tempDateFrom.toString());
-            eTTo.setText(tempDateTo.toString());
-            eTFrom.setOnClickListener(this);
-            eTTo.setOnClickListener(this);
-        }
-
-        /** Called when a drawer has settled in a completely closed state. */
-/*        public void onDrawerClosed(View view) {
-            super.onDrawerClosed(view);
-            tempDateFrom = getDateFrom();
-            tempDateTo = getDateTo();
-            toolbar.setTitle(getDateFrom().toStringNoYear() + " - " + getDateTo().toStringNoYear());
-            startLoadingAnimation(refreshItem);
-            getServerData(ApiClient.BETWEEN);
-        }
-
-        /** Called when a drawer has settled in a completely open state. */
-/*        public void onDrawerOpened(View drawerView) {
-            super.onDrawerOpened(drawerView);
-            dateFrom = null;
-            dateTo = null;
-        }
-
-        @Override
-        public void onClick(View view) {
-            Calendar calendar = Calendar.getInstance();
-            switch (view.getId()) {
-                case R.id.nav_drawer_from:
-                    DatePickerDialog datePickerDialogFrom = new DatePickerDialog(activity, this,
-                            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                    dPFrom = datePickerDialogFrom.getDatePicker();
-                    datePickerDialogFrom.show();
-                    break;
-                case R.id.nav_drawer_to:
-                    DatePickerDialog datePickerDialogTo = new DatePickerDialog(activity, this,
-                            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-                    dPTo = datePickerDialogTo.getDatePicker();
-                    datePickerDialogTo.show();
-                    break;
-                default:
-                    drawer.openDrawer(left_drawer);
-                    break;
-            }
-        }
-
-        @Override
-        public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
-            Calendar calendarFrom = Calendar.getInstance();
-            Calendar calendarTo = Calendar.getInstance();
-            if(datePicker.equals(dPFrom)) {
-                calendarFrom.set(i, i1, i2, 0, 0, 1);   //borde ändra så att man får början på dan istället för just nu
-                dateFrom = new CalendarFormatter(calendarFrom);
-                eTFrom.setText(dateFrom.toString());
-            }
-            else if(datePicker.equals(dPTo)) {
-                calendarTo.set(i, i1, i2, 23, 59, 59);  //borde ändra så att man får slutet på dan istället för just nu
-                dateTo = new CalendarFormatter(calendarTo);
-                eTTo.setText(dateTo.toString());
-            }
-        }
-
-        /**
-         * Returns the dateFrom from the dialog, if that is null it returns the previous dateFrom
-         * @return CalendarFormatter for dateFrom
-         */
-/*        public CalendarFormatter getDateFrom() {
-            if(dateFrom != null)
-                return dateFrom;
-            return tempDateFrom;
-        }
-
-        /**
-         * Returns the dateTo from the dialog, if that is null it returns the previous dateTo
-         * @return CalendarFormatter for dateTo
-         */
-/*        public CalendarFormatter getDateTo() {
-            if(dateTo != null)
-                return dateTo;
-            return tempDateTo;
-        }
-    }*/
 }

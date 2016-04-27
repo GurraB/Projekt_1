@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,6 +29,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     private MenuItem logInButton;
     private Controller controller;
     private LinearLayout layout;
+    private TextView tvFade;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
         etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
         layout = (LinearLayout) findViewById(R.id.standard_login_layout);
+        tvFade = (TextView) findViewById(R.id.login_fade);
+        progressBar = (ProgressBar) findViewById(R.id.login_progressbar);
     }
 
     @Override
@@ -76,7 +82,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
-        finish();
+        onBackPressed();
+        //finish();
     }
 
     public void onLoginSuccess() {
@@ -95,11 +102,13 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void startLoadingAnimation() {
-
+        progressBar.setVisibility(View.VISIBLE);
+        tvFade.setVisibility(View.VISIBLE);
     }
 
     public void stopLoadingAnimation() {
-
+        progressBar.setVisibility(View.GONE);
+        tvFade.setVisibility(View.GONE);
     }
 
     @Override

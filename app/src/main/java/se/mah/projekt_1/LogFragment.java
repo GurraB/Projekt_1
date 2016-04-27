@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,7 @@ public class LogFragment extends Fragment {
     private RecyclerView recyclerView;
     private View rootView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ProgressBar progressBar;
 
     /**
      * Constructor
@@ -50,14 +52,18 @@ public class LogFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_log, container, false);
+
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.addItemDecoration(new RecyclerViewDivider(10));
+        recyclerView.addItemDecoration(new RecyclerViewDivider(getContext(), 1, R.drawable.vertical_divider));
         recyclerView.setAdapter(new RecyclerViewAdapter(dataSet));
 
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setOnRefreshListener(((MainActivity)getContext()).getActionHandler());
+        swipeRefreshLayout.setOnRefreshListener(((MainActivity) getContext()).getActionHandler());
         swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+
+        progressBar = (ProgressBar) rootView.findViewById(R.id.log_progressbar);
+        progressBar.setVisibility(View.GONE);
 
         Log.v("LOGFRAGMENT", "ONCREATEVIEW");
         return rootView;
@@ -71,5 +77,17 @@ public class LogFragment extends Fragment {
         this.dataSet = androidStamps;
         swipeRefreshLayout.setRefreshing(false);
         recyclerView.swapAdapter(new RecyclerViewAdapter(dataSet), false);
+    }
+
+    public void startLoadingAnim() {
+        if(progressBar != null && !swipeRefreshLayout.isRefreshing())
+            progressBar.setVisibility(View.VISIBLE);
+        if(recyclerView != null)
+            recyclerView.setAdapter(new RecyclerViewAdapter(new ArrayList<AndroidStamp>()));
+    }
+
+    public void stopLoadingAnim() {
+        if(progressBar != null)
+            progressBar.setVisibility(View.GONE);
     }
 }
