@@ -3,6 +3,7 @@ package se.mah.projekt_1;
 import android.text.format.DateFormat;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -13,9 +14,14 @@ import java.util.GregorianCalendar;
  * A timestamp containing time and whether it is check out or in
  */
 
-public class AndroidStamp {
+public class AndroidStamp implements Serializable {
     private Calendar date;
     private boolean checkIn;
+
+
+    public AndroidStamp() {
+
+    }
 
     /**
      * Constructor

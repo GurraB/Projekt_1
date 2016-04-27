@@ -76,6 +76,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(layout.getWindowToken(), 0);
             controller.login(username, password);
+            item.setEnabled(false);
+            toolbar.setNavigationOnClickListener(null);
         }
         return true;
     }
@@ -83,11 +85,11 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View view) {
         onBackPressed();
-        //finish();
     }
 
-    public void onLoginSuccess() {
-
+    public void onLoginSuccess(User user) {
+        controller.startNewActivity(this, MainActivity.class, user);
+        finish();
     }
 
     public void onLoginFail() {
@@ -95,10 +97,9 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
         alertDialog.show();
     }
 
+    @Deprecated
     @Override
-    public void dataRecieved(Object data) {
-        controller.parseLoginInformation((ArrayList<LinkedHashMap<String, Object>>) data);
-    }
+    public void dataRecieved(ArrayList<AndroidStamp> stamps) {throw new UnsupportedOperationException();}
 
     @Override
     public void startLoadingAnimation() {
@@ -113,15 +114,6 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void showConnectionErrorMessage(String message, boolean retry) {
-        Snackbar snackbar = Snackbar
-                .make(layout, message, Snackbar.LENGTH_LONG);
-        if(retry)
-            snackbar.setAction("RETRY", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    controller.getServerData(ApiClient.LOGIN);
-                }
-            });
-        snackbar.show();
+        Snackbar.make(layout, message, Snackbar.LENGTH_LONG).show();
     }
 }

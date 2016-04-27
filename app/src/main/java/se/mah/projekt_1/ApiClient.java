@@ -17,17 +17,13 @@ import java.util.Map;
  * ApiClient talks to the server and retrieves all necessary data in a separate thread
  */
 
-public class ApiClient extends AsyncTask<String, String, ArrayList<LinkedHashMap<String, Object>>>{
+public class ApiClient extends AsyncTask<String, String, AndroidStamp[]>{
 
     private User user;
-    private String url = "http://195.178.224.74:44344/android";    //Server address
+    private String url = "http://195.178.224.74:44344/android/between";    //Server address
     private RestTemplate restTemplate;
     private Controller controller;
     private long from = 0, to = 0;
-
-    public static final String ALL = "/all";
-    public static final String BETWEEN = "/between";
-    public static final String LOGIN = "/login";
 
     /**
      * Constructor
@@ -59,73 +55,27 @@ public class ApiClient extends AsyncTask<String, String, ArrayList<LinkedHashMap
     }
 
     /**
-     * Is called right before we get the data
-     */
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    /**
      * Gets the data from the server
      * @param strings what type of data to be fetched
      * @return an ArrayList with LinkedHashMaps containing the data
      * @throws RestClientException Unable to connect to server
      */
     @Override
-    protected ArrayList<LinkedHashMap<String, Object>> doInBackground(String... strings) throws RestClientException {
-        ArrayList<LinkedHashMap<String, Object>> retValue = new ArrayList<>();
-        LinkedHashMap<String, Object> retValueLogin;
+    protected AndroidStamp[] doInBackground(String... strings) throws RestClientException {
+        AndroidStamp[] retValue = null;
         Log.v("ApiClient", "----------CONNECTING TO SERVER-------------");
-        url += strings[0];
         try {
-            switch (strings[0]) {
-                case ALL:
-                    retValue = restTemplate.postForObject(url, user.getKey(), ArrayList.class);
-                    break;
-                case BETWEEN:
-                    Map<String, Object> params = new LinkedHashMap<>();
-                    params.put("id", user.getKey().getId());
-                    Log.v("MITT ID", user.getKey().getId());
-                    params.put("from",from);
-                    params.put("to", to);
-                    retValue = restTemplate.postForObject(url, params, ArrayList.class);
-                    break;
-                case LOGIN:
-                    Map<String, Object> loginParams = new LinkedHashMap<>();
-                    loginParams.put("firstName", user.getFistname());
-                    loginParams.put("lastName", user.getLastname());
-                    retValueLogin = restTemplate.postForObject(url, loginParams, LinkedHashMap.class);
-                    retValue = new ArrayList<>();
-                    retValue.add(retValueLogin);
-                    break;
-                default:
-                    controller.showConnectionErrorMessage("Invalid request", false);
-                    controller.showConnectionErrorMessage(strings[0], false);
-                    break;
-            }
+            Map<String, Object> params = new LinkedHashMap<>();
+            params.put("id", user.getRfid().getId());
+            Log.v("MITT ID", user.getRfid().getId());
+            params.put("from",from);
+            params.put("to", to);
+            retValue = restTemplate.postForObject(url, params, AndroidStamp[].class);
         } catch (RestClientException exception) {
             controller.showConnectionErrorMessage("RestClientException", true);
-            controller.showConnectionErrorMessage(strings[0], true);
+            controller.showConnectionErrorMessage("APICLIENT CANCER", true);
         }
         return retValue;
-    }
-
-    /**
-     * Update loadingbars etc whilst getting the data
-     * @param values
-     */
-    @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-    }
-
-    /**
-     * If the request is cancelled
-     */
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
     }
 
     /**
@@ -133,7 +83,7 @@ public class ApiClient extends AsyncTask<String, String, ArrayList<LinkedHashMap
      * @param retValue retrieved data from server
      */
     @Override
-    protected void onPostExecute(ArrayList<LinkedHashMap<String, Object>> retValue) {
+    protected void onPostExecute(AndroidStamp[] retValue) {
         super.onPostExecute(retValue);
         controller.finishedLoading(retValue);
     }

@@ -120,6 +120,6 @@ public class ActionHandler extends ActionBarDrawerToggle implements View.OnClick
 
     @Override
     public void onRefresh() {
-        controller.getServerData(ApiClient.BETWEEN);
+        controller.getServerStamps();
     }
 }

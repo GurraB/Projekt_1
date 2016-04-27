@@ -1,10 +1,14 @@
 package se.mah.projekt_1;
 
+import java.io.Serializable;
+
 /**
  * Created by Gustaf on 07/04/2016.
  */
-public class RfidKey {
+public class RfidKey implements Serializable {
     private String id;
+
+    public RfidKey() {}
 
     public RfidKey(String id) {
         this.id = id;

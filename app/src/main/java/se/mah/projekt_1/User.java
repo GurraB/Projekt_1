@@ -1,52 +1,40 @@
 package se.mah.projekt_1;
 
+import java.io.Serializable;
+
 /**
  * Created by Gustaf on 11/04/2016.
  */
-public class User {
-    private String fistname;
-    private String lastname;
-    private RfidKey key;
+public class User implements Serializable {
+
+    private String firstName;
+    private String lastName;
+    private RfidKey rfid;
     private String id;
 
-    public User(String fistname, String lastname, RfidKey key, String id) {
-        this.fistname = fistname;
-        this.lastname = lastname;
-        this.key = key;
+    public User() {}
+
+    public User(String[] userInfo) {
+        this.firstName = userInfo[0];
+        this.lastName = userInfo[1];
+        this.rfid = new RfidKey(userInfo[2]);
+        this.id = userInfo[3];
+    }
+
+    public User(String firstName, String lastName, RfidKey key, String id) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.rfid = key;
         this.id = id;
     }
 
-    public User(String fistname, String lastname) {
-        this.fistname = fistname;
-        this.lastname = lastname;
+    public User(String fistname, String lastName) {
+        this.firstName = fistname;
+        this.lastName = lastName;
     }
 
     public String getName() {
-        return fistname + " " + lastname;
-    }
-
-    public void setKey(RfidKey key) {
-        this.key = key;
-    }
-
-    public RfidKey getKey() {
-        return key;
-    }
-
-    public String getFistname() {
-        return fistname;
-    }
-
-    public void setFistname(String fistname) {
-        this.fistname = fistname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+        return firstName + " " + lastName;
     }
 
     public String getId() {
@@ -55,5 +43,33 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public RfidKey getRfid() {
+        return rfid;
+    }
+
+    public void setRfid(RfidKey rfid) {
+        this.rfid = rfid;
+    }
+
+    public String[] toStringArray() {
+        return new String[]{firstName, lastName, rfid.getId(), id};
     }
 }

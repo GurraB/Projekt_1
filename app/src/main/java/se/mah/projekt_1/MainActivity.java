@@ -1,16 +1,10 @@
 package se.mah.projekt_1;
 
-import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,20 +14,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.annotation.JacksonAnnotation;
-
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedHashMap;
 
 /**
  * Created by Gustaf on 06/04/2016.
@@ -47,14 +33,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private ViewPager viewPager;
     private DrawerLayout drawer;
     private RelativeLayout left_drawer;
-    private ImageView actionView;
-    private MenuItem refreshItem;
     private MenuItem sort;
     private ActionHandler drawerListener;
     private LogFragment logFragment;
     private GraphFragment graphFragment;
     private ArrayList<AndroidStamp> dataSet = new ArrayList<>();
-    private Animation loadingAnimation;
     private Controller controller;
     private TextView userName;
     private EditText etFrom;
@@ -70,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         setContentView(R.layout.activity_main);
         initComponents();
         if (savedInstanceState == null) {
-            controller.getServerData(ApiClient.BETWEEN);
+            controller.getServerStamps();
         }
     }
 
@@ -108,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         Log.v("MENU CREATED", "CANCEEEER");
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.mainmenu, menu);
-        refreshItem = menu.findItem(R.id.refresh_button);
         return true;
     }
 
@@ -116,8 +98,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh_button:
-                refreshItem = item;
-                controller.getServerData(ApiClient.BETWEEN);
+                controller.getServerStamps();
                 break;
             case R.id.sort_button:
                 break;
@@ -213,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
             snackbar.setAction("RETRY", new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    controller.getServerData(ApiClient.BETWEEN);
+                    controller.getServerStamps();
                 }
             });
         snackbar.show();
@@ -224,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     }
 
     @Override
-    public void dataRecieved(Object data) {
-        setDataSet(controller.parseTimeStamps((ArrayList<LinkedHashMap<String, Object>>) data));
+    public void dataRecieved(ArrayList<AndroidStamp> stamps) {
+        setDataSet(stamps);
     }
 
     @Override
