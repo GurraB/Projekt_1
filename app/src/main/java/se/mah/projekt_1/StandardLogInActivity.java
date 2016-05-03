@@ -87,7 +87,7 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
         onBackPressed();
     }
 
-    public void onLoginSuccess(User user) {
+    public void onLoginSuccess(Account user) {
         controller.startNewActivity(this, MainActivity.class, user);
         finish();
     }
@@ -95,6 +95,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     public void onLoginFail() {
         AlertDialog alertDialog = new LoginInFailDialog(this).create().create();
         alertDialog.show();
+        logInButton.setEnabled(true);
+        toolbar.setNavigationOnClickListener(this);
     }
 
     @Deprecated

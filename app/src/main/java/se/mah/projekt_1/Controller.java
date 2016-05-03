@@ -27,7 +27,7 @@ public class Controller {
 
     private ArrayList<AndroidStamp> dataSet = new ArrayList<>();
     private CalendarFormatter dateFrom, dateTo;
-    private User user;
+    private Account user;
     private AsyncTaskCompatible activity;
     private boolean sortAscending = true;
 
@@ -40,7 +40,7 @@ public class Controller {
 
     public void getServerStamps() {
         activity.startLoadingAnimation();
-        new ApiClient(this, user, dateFrom.getCalendar().getTimeInMillis(), dateTo.getCalendar().getTimeInMillis()).execute();
+        new ApiClient(this, dateFrom.getCalendar().getTimeInMillis(), dateTo.getCalendar().getTimeInMillis()).execute();
     }
 
     public void parseSavedInstance(Bundle savedInstance) {
@@ -70,13 +70,20 @@ public class Controller {
         context.startActivity(intent);
     }
 
-    public void startNewActivity(Context context, Class newActivity, User user) {
+    public void startNewActivity(Context context, Class newActivity, Account user) {
 
         Bundle bundle = new Bundle();
-        bundle.putString("firstname", user.getFirstName());
+        /*bundle.putString("firstname", user.getFirstName());
         bundle.putString("lastname", user.getLastName());
-        bundle.putString("rfidkey", user.getRfid().getId());
+        bundle.putString("rfidkey", user.getRfidKey().getId());
         bundle.putString("id", user.getId());
+        bundle.putString("username", user.getId());
+        bundle.putString("password", user.getId());
+        bundle.putString("accountnonexpired", user.getId());
+        bundle.putString("isenabled", user.getId());
+        bundle.putString("authorities", user.getId());*/
+
+        bundle.putSerializable("user", user);
 
         Intent intent = new Intent(context, newActivity);
         intent.putExtra("userInformation", bundle);
@@ -106,11 +113,12 @@ public class Controller {
     }
 
     public void parseUserInformation(Bundle userInformation) {
-        String firstName = (String) userInformation.get("firstname");
+        /*String firstName = (String) userInformation.get("firstname");
         String lastName = (String) userInformation.get("lastname");
         String key = (String) userInformation.get("rfidkey");
         String id = (String) userInformation.get("id");
-        user = new User(firstName, lastName, new RfidKey(key), id);
+        //user = new User(firstName, lastName, new RfidKey(key), id);*/
+        user = (Account) userInformation.getSerializable("value");
     }
 
     public CalendarFormatter getDateFrom() {
@@ -157,20 +165,19 @@ public class Controller {
         activity.dataRecieved(dataSet);
     }
 
-    public void finishedLoading(User user) {
+    public void finishedLoading(Account user) {
         activity.stopLoadingAnimation();
-        Log.v("User rfid", user.getRfid().getId());
         if(user != null)
             ((StandardLogInActivity)activity).onLoginSuccess(user);
         else
-            ((StandardLogInActivity)activity).onLoginFail();
+            ((StandardLogInActivity)activity).onLoginFail();    //null om servern inte är uppe
     }
 
     public void showConnectionErrorMessage(String message, boolean retry) {
         activity.showConnectionErrorMessage(message, retry);
     }
 
-    public User getUser() {
+    public Account getUser() {
         return user;
     }
 

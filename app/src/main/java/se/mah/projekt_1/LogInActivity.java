@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -23,6 +24,8 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
+        new LoginServiceTest(this).execute("user", "pass");
 
         Animation slideInAnim1 = AnimationUtils.loadAnimation(this, R.anim.start_screen_animation);
         Animation slideInAnim2 = AnimationUtils.loadAnimation(this, R.anim.start_screen_animation);
@@ -47,5 +50,12 @@ public class LogInActivity extends AppCompatActivity {
         cardViewuserCredentials.setOnClickListener(onClickListener);
         cardViewNFCCard.setOnClickListener(onClickListener);
         cardViewNFCStamp.setOnClickListener(onClickListener);
+    }
+
+    public void finishedLoading(String res) {
+        if(res == null)
+            Log.v("FINISHEDlOADING", "res is null");
+        else
+            Log.v("RESULT", res);
     }
 }

@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private TextView userName;
     private EditText etFrom;
     private EditText etTo;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         left_drawer = (RelativeLayout) findViewById(R.id.left_drawer);
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         tabLayout = (TabLayout) findViewById(R.id.tab);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
     }
 
     @Override
