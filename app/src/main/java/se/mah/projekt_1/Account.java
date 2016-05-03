@@ -26,6 +26,8 @@ public class Account implements Serializable, Principal {
     private boolean accountNonExpired = true;
     private boolean isEnabled = true;
 
+    private RfidKey rfidKey;
+
     public String getName() {
         return firstName + " " + lastName;
     }
@@ -71,7 +73,15 @@ public class Account implements Serializable, Principal {
     }
 
     public String toString() {
-        return firstName + " " + lastName + ":  " + "\nid: " + id + "\nfirstname: " + firstName + "\nlastname: " + lastName + "\naccountNonExpired: " + accountNonExpired + "\nenabled: " + isEnabled;
+        return firstName + " " + lastName + ":  " + "\nid: " + id + "\nfirstname: " + firstName + "\nlastname: " + lastName + "\nrfid: " + rfidKey.getId() + "\naccountNonExpired: " + accountNonExpired + "\nenabled: " + isEnabled;
+    }
+
+    public RfidKey getRfidKey() {
+        return rfidKey;
+    }
+
+    public void setRfidKey(RfidKey rfidKey) {
+        this.rfidKey = rfidKey;
     }
 }
 
