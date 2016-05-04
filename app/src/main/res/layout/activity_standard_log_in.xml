@@ -24,14 +24,14 @@
             android:src="@drawable/project_image"
             android:transitionName="@string/transition1" />
 
-        <EditText
-            android:id="@+id/etUsername"
+        <AutoCompleteTextView
+            android:id="@+id/autoComplete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
-            android:hint="@string/username"
             android:singleLine="true"
-            android:textSize="@dimen/log_in_textSize" />
+            android:textSize="@dimen/log_in_textSize"
+            android:hint="Username"/>
 
         <EditText
             android:id="@+id/etPassword"

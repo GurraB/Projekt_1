@@ -16,9 +16,6 @@ public class LogInActivity extends AppCompatActivity {
     private CardView cardViewuserCredentials;
     private CardView cardViewNFCCard;
     private CardView cardViewNFCStamp;
-    private ImageView sharedElement1;
-    private ImageView sharedElement2;
-    private ImageView sharedElement3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +32,11 @@ public class LogInActivity extends AppCompatActivity {
         cardViewNFCCard = (CardView) findViewById(R.id.card_view_nfc_login);
         cardViewNFCStamp = (CardView) findViewById(R.id.card_view_nfc_check_in);
 
-        sharedElement1 = (ImageView) findViewById(R.id.shared_element1);
-        sharedElement2 = (ImageView) findViewById(R.id.shared_element2);
-        sharedElement3 = (ImageView) findViewById(R.id.shared_element3);
-
         cardViewuserCredentials.startAnimation(slideInAnim1);
         cardViewNFCCard.startAnimation(slideInAnim2);
         cardViewNFCStamp.startAnimation(slideInAnim3);
 
-        onClickListener = new LogInOnClickListener(this, sharedElement1, sharedElement2, sharedElement3);
+        onClickListener = new LogInOnClickListener(this);
 
         cardViewuserCredentials.setOnClickListener(onClickListener);
         cardViewNFCCard.setOnClickListener(onClickListener);

@@ -23,6 +23,7 @@ public class Account implements Serializable {
     private String id;
     private String firstName;
     private String lastName;
+    private String username;
 
     private boolean accountNonExpired = true;
     private boolean isEnabled = true;
@@ -89,6 +90,7 @@ public class Account implements Serializable {
     public void createAccountFromMap(LinkedHashMap<String, Object> accountMap, String encryptedUserCredentials) {
         firstName = (String) accountMap.get("firstName");
         lastName = (String) accountMap.get("lastName");
+        username = (String) accountMap.get("username");
         id = (String) accountMap.get("id");
         accountNonExpired = (Boolean) accountMap.get("accountNonExpired");
         isEnabled = (Boolean) accountMap.get("enabled");
@@ -102,6 +104,14 @@ public class Account implements Serializable {
 
     public void setEncryptedUserCredentials(String encryptedUserCredentials) {
         this.encryptedUserCredentials = encryptedUserCredentials;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
 

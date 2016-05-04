@@ -22,14 +22,6 @@
         android:foreground="@drawable/card_foreground"
         android:stateListAnimator="@drawable/elevation_on_click">
 
-        <ImageView
-            android:id="@+id/shared_element1"
-            android:transitionName="@string/transition1"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:src="@drawable/project_image"/>
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,13 +40,6 @@
         android:clickable="true"
         android:foreground="@drawable/card_foreground"
         android:stateListAnimator="@drawable/elevation_on_click">
-
-        <ImageView
-            android:id="@+id/shared_element2"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:src="@drawable/project_image"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,13 +60,6 @@
         android:clickable="true"
         android:foreground="@drawable/card_foreground"
         android:stateListAnimator="@drawable/elevation_on_click">
-
-        <ImageView
-            android:id="@+id/shared_element3"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:src="@drawable/project_image"/>
 
         <TextView
             android:layout_width="wrap_content"

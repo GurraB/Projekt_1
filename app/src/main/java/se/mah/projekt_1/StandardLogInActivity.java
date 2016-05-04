@@ -1,7 +1,6 @@
 package se.mah.projekt_1;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -15,18 +14,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class StandardLogInActivity extends AppCompatActivity implements View.OnClickListener, AsyncTaskCompatible{
 
     private Toolbar toolbar;
-    private EditText etUsername;
     private EditText etPassword;
     private MenuItem logInButton;
     private Controller controller;
@@ -34,8 +34,9 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     private TextView tvFade;
     private ProgressBar progressBar;
     private AppCompatCheckBox cbRememberMe;
-    private String encryptedUserCredentials;
+    private String encryptedUserCredentials = "";
     private SharedPreferences.Editor editor;
+    private AutoCompleteTextView etUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +49,38 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setUpRememberMe() {
-        editor = getSharedPreferences("userdata", MODE_PRIVATE).edit();
-        SharedPreferences preferences = getSharedPreferences("userdata", MODE_PRIVATE);
-        String username = preferences.getString("userName", "");
-        int passwordLength = preferences.getInt("passwordLength", 0);
-        encryptedUserCredentials = preferences.getString("encryptedUserCredentials", "");
-        String generatedPassword = "";
-        etUsername.setText(username);
-        for (int i = 0; i < passwordLength; i++) {
-            generatedPassword += '*';
-        }
-        etPassword.setText(generatedPassword);
-        if(encryptedUserCredentials != "")
-            cbRememberMe.setChecked(true);
+        final SharedPreferences preferences = getSharedPreferences("users", MODE_PRIVATE);
+        editor = preferences.edit();
+
+        Object[] savedUserKeys = preferences.getAll().keySet().toArray();
+        ArrayList<String> savedUsers = new ArrayList<>();
+        for (int i = 0; i < savedUserKeys.length; i++)
+            savedUsers.add(savedUserKeys[i].toString());
+
+        etUsername.setThreshold(0);
+        etUsername.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (view.equals(etUsername))
+                    etUsername.showDropDown();
+            }
+        });
+        etUsername.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, savedUsers));
+        etUsername.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int n, long l) {
+                SharedPreferences prefs = getSharedPreferences(preferences.getString(((TextView) view).getText().toString(), null), MODE_PRIVATE);
+
+                encryptedUserCredentials = prefs.getString("encryptedUserCredentials", null);
+                String generatedPassword = "";
+                for (int i = 0; i < prefs.getInt("passwordLength", 0); i++)
+                    generatedPassword += "*";
+                etPassword.setText(generatedPassword);
+                cbRememberMe.setChecked(true);
+                Log.v("encryptedUserCreds", encryptedUserCredentials);
+                Log.v("generatedPassword", generatedPassword);
+            }
+        });
     }
 
     private void setUpToolbar() {
@@ -73,12 +93,12 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
 
     private void initComponents() {
         toolbar = (Toolbar) findViewById(R.id.standard_log_in_app_bar);
-        etUsername = (EditText) findViewById(R.id.etUsername);
         etPassword = (EditText) findViewById(R.id.etPassword);
         layout = (LinearLayout) findViewById(R.id.standard_login_layout);
         tvFade = (TextView) findViewById(R.id.login_fade);
         progressBar = (ProgressBar) findViewById(R.id.login_progressbar);
         cbRememberMe = (AppCompatCheckBox) findViewById(R.id.checkbox_remember_me);
+        etUsername = (AutoCompleteTextView) findViewById(R.id.autoComplete);
     }
 
     @Override
@@ -111,13 +131,18 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
 
     public void onLoginSuccess(Account user) {
         if(cbRememberMe.isChecked()) {
-            editor.putString("userName", etUsername.getText().toString());
-            editor.putInt("passwordLength", etPassword.getText().length());
-            editor.putString("encryptedUserCredentials", user.getEncryptedUserCredentials());
-            editor.putString(user.getRfidKey().getId(), user.getEncryptedUserCredentials());
-            Log.v("USER RFID", user.getRfidKey().getId());
+            editor.putString(user.getUsername(), String.valueOf(user.getUsername().hashCode()));
             editor.commit();
+            SharedPreferences.Editor prefsEditor = getSharedPreferences(String.valueOf(user.getUsername().hashCode()), MODE_PRIVATE).edit();
+            prefsEditor.putString("username", etUsername.getText().toString());
+            prefsEditor.putInt("passwordLength", etPassword.getText().length());
+            prefsEditor.putString("encryptedUserCredentials", user.getEncryptedUserCredentials());
+            prefsEditor.putString("rfid", user.getRfidKey().getId());
+            prefsEditor.commit();
         }
+        SharedPreferences.Editor nfcPreferences = getSharedPreferences(user.getRfidKey().getId(), MODE_PRIVATE).edit();
+        nfcPreferences.putString("encryptedUserCredentials", user.getEncryptedUserCredentials());
+        nfcPreferences.commit();
         controller.startNewActivity(this, MainActivity.class, user);
         finish();
     }
