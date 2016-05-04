@@ -4,21 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.alamkanak.weekview.WeekViewEvent;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.concurrent.Callable;
 
 /**
  * Created by Gustaf on 13/04/2016.
@@ -40,7 +32,11 @@ public class Controller {
 
     public void getServerStamps() {
         activity.startLoadingAnimation();
-        new ApiClient(this, dateFrom.getCalendar().getTimeInMillis(), dateTo.getCalendar().getTimeInMillis()).execute();
+        new StampsService(this).execute(
+                ServerCommunicationService.encryptAuthentication("user", "pass"),
+                user.getRfidKey().getId(),
+                String.valueOf(dateFrom.getCalendar().getTimeInMillis()),
+                String.valueOf(dateTo.getCalendar().getTimeInMillis()));
     }
 
     public void parseSavedInstance(Bundle savedInstance) {
@@ -73,16 +69,6 @@ public class Controller {
     public void startNewActivity(Context context, Class newActivity, Account user) {
 
         Bundle bundle = new Bundle();
-        /*bundle.putString("firstname", user.getFirstName());
-        bundle.putString("lastname", user.getLastName());
-        bundle.putString("rfidkey", user.getRfidKey().getId());
-        bundle.putString("id", user.getId());
-        bundle.putString("username", user.getId());
-        bundle.putString("password", user.getId());
-        bundle.putString("accountnonexpired", user.getId());
-        bundle.putString("isenabled", user.getId());
-        bundle.putString("authorities", user.getId());*/
-
         bundle.putSerializable("user", user);
 
         Intent intent = new Intent(context, newActivity);
@@ -90,34 +76,7 @@ public class Controller {
         context.startActivity(intent);
     }
 
-    public User createUser(ArrayList<LinkedHashMap<String, Object>> result) {
-        User user = null;
-        if (result.isEmpty())
-            ((StandardLogInActivity) activity).onLoginFail();
-        else {
-            LinkedHashMap<String, Object> keyObject;
-            String firstname, lastname, key, id;
-            try {
-                LinkedHashMap<String, Object> userInformation = result.get(0);
-                firstname = (String) userInformation.get("firstName");
-                lastname = (String) userInformation.get("lastName");
-                keyObject = (LinkedHashMap<String, Object>) userInformation.get("rfid");
-                key = (String) keyObject.get("id");
-                id = (String) userInformation.get("id");
-                user = new User(firstname, lastname, new RfidKey(key), id);
-            } catch (NullPointerException exception) {
-                Log.v("CREATEUSER", "NULLPOINTEREXCEPTION");
-            }
-        }
-        return user;
-    }
-
     public void parseUserInformation(Bundle userInformation) {
-        /*String firstName = (String) userInformation.get("firstname");
-        String lastName = (String) userInformation.get("lastname");
-        String key = (String) userInformation.get("rfidkey");
-        String id = (String) userInformation.get("id");
-        //user = new User(firstName, lastName, new RfidKey(key), id);*/
         user = (Account) userInformation.getSerializable("value");
     }
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.security.auth.AuthPermission;
@@ -17,7 +18,7 @@ import javax.security.auth.AuthPermission;
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Account implements Serializable, Principal {
+public class Account implements Serializable {
 
     private String id;
     private String firstName;
@@ -82,6 +83,15 @@ public class Account implements Serializable, Principal {
 
     public void setRfidKey(RfidKey rfidKey) {
         this.rfidKey = rfidKey;
+    }
+
+    public void createAccountFromMap(LinkedHashMap<String, Object> accountMap) {
+        firstName = (String) accountMap.get("firstName");
+        lastName = (String) accountMap.get("lastName");
+        id = (String) accountMap.get("id");
+        accountNonExpired = (Boolean) accountMap.get("accountNonExpired");
+        isEnabled = (Boolean) accountMap.get("enabled");
+        rfidKey = new RfidKey((String) ((LinkedHashMap<String, Object>) accountMap.get("rfidKey")).get("id"));
     }
 }
 

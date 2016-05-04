@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 /**
  * Created by Gustaf on 12/04/2016.
  */
-public class ApiClientTest extends TestCase {
+public class StampsServiceTest extends TestCase {
 
     public void testOnPreExecute() throws Exception {
 

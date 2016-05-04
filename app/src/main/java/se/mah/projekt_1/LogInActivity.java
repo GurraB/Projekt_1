@@ -25,8 +25,6 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
-        new LoginServiceTest(this).execute("user", "pass");
-
         Animation slideInAnim1 = AnimationUtils.loadAnimation(this, R.anim.start_screen_animation);
         Animation slideInAnim2 = AnimationUtils.loadAnimation(this, R.anim.start_screen_animation);
         Animation slideInAnim3 = AnimationUtils.loadAnimation(this, R.anim.start_screen_animation);

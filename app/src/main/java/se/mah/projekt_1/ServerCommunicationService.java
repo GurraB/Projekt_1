@@ -1,18 +1,21 @@
 package se.mah.projekt_1;
 
+import android.provider.MediaStore;
 import android.util.Log;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,68 +25,68 @@ import java.util.Map;
 public class ServerCommunicationService {
 
     public Account login(String url, String username, String password) throws RuntimeException {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        RestTemplate restTemplate = createRestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        String plainCreds = username + ":" + password;
-        username = password = null;
-        byte[] plainCredsByte = plainCreds.getBytes();
-        byte[] base64 = Base64Utils.encode(plainCredsByte);
-        String encryptedString = new String(base64);
-        headers.add("Authorization", "Basic " + encryptedString);
+        headers.add("Authorization", "Basic " + encryptAuthentication(username, password));
+
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-        Log.v("SERVERCOMMUNICATIONSERV", "INB4 THE LOGIN");
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
-        Log.v("SERVERCOMMUNICATIONSERV", "AFTER THE LOGIN");
 
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>) response.getBody();
         LinkedHashMap<String, Object> accountMap = (LinkedHashMap<String, Object>) responseMap.get("principal");
-        LinkedHashMap<String, Object> rfidMap = (LinkedHashMap<String, Object>) accountMap.get("rfidKey");
-        Account acc = new Account();
 
-        acc.setFirstName((String) accountMap.get("firstName"));
-        acc.setLastName((String) accountMap.get("lastName"));
-        acc.setId((String) accountMap.get("id"));
-        acc.setAccountNonExpired((Boolean) accountMap.get("accountNonExpired"));
-        acc.setIsEnabled((Boolean) accountMap.get("enabled"));
-        acc.setRfidKey(new RfidKey((String) rfidMap.get("id")));
+        Account acc = new Account();
+        acc.createAccountFromMap(accountMap);
         return acc;
     }
 
-    public AndroidStamp[] getStampsForUser(String url, String username, String password, String rfid, long from, long to) {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+    public AndroidStamp[] getStampsForUser(String url, String encryptedUserCredentials, String rfid, String from, String to) {
+        RestTemplate restTemplate = createRestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        String plainCreds = username + ":" + password;
-        username = password = null;
-        byte[] plainCredsByte = plainCreds.getBytes();
-        byte[] base64 = Base64Utils.encode(plainCredsByte);
-        String encryptedString = new String(base64);
-        headers.add("Authorization", "Basic " + encryptedString);
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("from", String.valueOf(from));
-        body.add("to", String.valueOf(to));
-        body.add("id", String.valueOf(rfid));
-        //headers.add("from", String.valueOf(from));
-        //headers.add("to", String.valueOf(to));
-        //headers.add("rfid", String.valueOf(rfid));
-        url += "from=" + String.valueOf(from);
-        url += "&to=" + String.valueOf(to);
-        url += "&rfid=" + String.valueOf(rfid);
+        headers.add("Authorization", "Basic " + encryptedUserCredentials);
+
+        //Temporary url TODO change to URIComponentBuilder
+        url += "&";
+        url += "from=" + from;
+        url += "&to=" + to;
+        url += "&rfid=" + rfid;
         Log.v("HEADER STRING", headers.toString());
+
         HttpEntity<?> requestEntity = new HttpEntity<Object>(headers);
-
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("id", rfid);
-        params.put("from", from);
-        params.put("to", to);
-
         ResponseEntity<AndroidStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AndroidStamp[].class);
-
         AndroidStamp[] stamps = response.getBody();
 
         return stamps;
+    }
+
+    private RestTemplate createRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
+        requestFactory.setReadTimeout(3000);    //Timeout after 3 seconds
+        requestFactory.setConnectTimeout(3000);
+        return restTemplate;
+    }
+
+    public static String encryptAuthentication(String username, String password) {
+        String plainCreds = username + ":" + password;
+        byte[] plainCredsByte = plainCreds.getBytes();
+        byte[] base64 = Base64Utils.encode(plainCredsByte);
+        return new String(base64);
+    }
+
+    private String buildURI(String uri, String from, String to, String rfid) {
+        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        ArrayList<String> param = new ArrayList<>();
+        param.add(from);
+        map.put("from", param);
+        param.set(0, to);
+        map.put("to", param);
+        param.set(0, rfid);
+        map.put("rfid", param);
+        UriComponents uriComp = UriComponentsBuilder.fromUriString(uri).queryParams(map).build();
+        return uriComp.toString();
     }
 }
