@@ -11,4 +11,6 @@ public interface AsyncTaskCompatible {
     void startLoadingAnimation();
     void stopLoadingAnimation();
     void showConnectionErrorMessage(String message, boolean retry);
+    void onLoginSuccess(Account user);
+    void onLoginFail();
 }

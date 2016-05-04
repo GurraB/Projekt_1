@@ -48,8 +48,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     }
 
     private void setUpRememberMe() {
-        editor = getPreferences(MODE_PRIVATE).edit();
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        editor = getSharedPreferences("userdata", MODE_PRIVATE).edit();
+        SharedPreferences preferences = getSharedPreferences("userdata", MODE_PRIVATE);
         String username = preferences.getString("userName", "");
         int passwordLength = preferences.getInt("passwordLength", 0);
         encryptedUserCredentials = preferences.getString("encryptedUserCredentials", "");
@@ -114,6 +114,8 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
             editor.putString("userName", etUsername.getText().toString());
             editor.putInt("passwordLength", etPassword.getText().length());
             editor.putString("encryptedUserCredentials", user.getEncryptedUserCredentials());
+            editor.putString(user.getRfidKey().getId(), user.getEncryptedUserCredentials());
+            Log.v("USER RFID", user.getRfidKey().getId());
             editor.commit();
         }
         controller.startNewActivity(this, MainActivity.class, user);

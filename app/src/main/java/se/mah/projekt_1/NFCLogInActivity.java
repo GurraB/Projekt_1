@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
 import android.nfc.Tag;
@@ -21,8 +22,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-public class NFCLogInActivity extends AppCompatActivity {
+import java.util.ArrayList;
 
+public class NFCLogInActivity extends AppCompatActivity implements AsyncTaskCompatible {
+
+    private Controller controller;
     private TextView textView;
     private NfcAdapter nfcAdapter;
     private String[][] techList = new String[][] {
@@ -56,6 +60,14 @@ public class NFCLogInActivity extends AppCompatActivity {
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, new IntentFilter[]{filter}, techList);
+        Log.v("NFCLOGINACTIVITY", getIntent().getAction());
+        Intent intent = getIntent();
+        if(intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
+            String tagID = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
+            Log.v("NFC TAG", tagID);
+            Log.v("NFC TAG", tagID);
+            logInWithRfid(tagID);
+        }
     }
 
     @Override
@@ -66,11 +78,22 @@ public class NFCLogInActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        textView = (TextView) findViewById(R.id.textViewNFC);
         if(intent.getAction().equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             String tagID = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
             Log.v("NFC TAG", tagID);
-            textView.setText(tagID);
+            logInWithRfid(tagID);
+        }
+    }
+
+    private void logInWithRfid(String tagID) {
+        controller = new Controller(this);
+        SharedPreferences preferences = getSharedPreferences("userdata", MODE_PRIVATE);
+        String encryptedUserCredentials = preferences.getString(tagID, null);
+        if(encryptedUserCredentials != null)
+            controller.login(encryptedUserCredentials);
+        else {
+            Log.v("NFCLOGINACTIVITY", "User not Found!!!!");
+            //TODO open dialog
         }
     }
 
@@ -87,5 +110,36 @@ public class NFCLogInActivity extends AppCompatActivity {
             out += hex[j];
         }
         return out;
+    }
+
+    public void onLoginSuccess(Account user) {
+        controller.startNewActivity(this, MainActivity.class, user);
+    }
+
+    @Override
+    public void onLoginFail() {
+        Log.v("NFCLOGINACTIVITY", "LOGIN FAILED");
+        //TODO SnackBar
+    }
+
+    @Deprecated
+    @Override
+    public void dataRecieved(ArrayList<AndroidStamp> stamps) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void startLoadingAnimation() {
+        //TODO start loading
+    }
+
+    @Override
+    public void stopLoadingAnimation() {
+        //TODO stop Loading
+    }
+
+    @Override
+    public void showConnectionErrorMessage(String message, boolean retry) {
+
     }
 }

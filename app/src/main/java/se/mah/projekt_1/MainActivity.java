@@ -222,4 +222,16 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     public void loadGraph() {
         graphFragment.showGraph();
     }
+
+    @Deprecated
+    @Override
+    public void onLoginSuccess(Account user) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    @Override
+    public void onLoginFail() {
+        throw new UnsupportedOperationException();
+    }
 }

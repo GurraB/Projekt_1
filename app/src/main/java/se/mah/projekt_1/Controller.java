@@ -132,10 +132,11 @@ public class Controller {
 
     public void finishedLoading(Account user) {
         activity.stopLoadingAnimation();
+
         if(user != null)
-            ((StandardLogInActivity)activity).onLoginSuccess(user);
+            activity.onLoginSuccess(user);
         else
-            ((StandardLogInActivity)activity).onLoginFail();    //null om servern inte är uppe
+            activity.onLoginFail();    //null om servern inte är uppe
     }
 
     public void showConnectionErrorMessage(String message, boolean retry) {
