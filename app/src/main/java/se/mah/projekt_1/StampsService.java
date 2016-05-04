@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class StampsService extends AsyncTask<String, String, AndroidStamp[]>{
 
     private Controller controller;
+    private String url = "http://195.178.224.74:44344/api/android/between";
 
     /**
      * Constructor
@@ -32,7 +33,7 @@ public class StampsService extends AsyncTask<String, String, AndroidStamp[]>{
      */
     @Override
     protected AndroidStamp[] doInBackground(String... strings) throws RestClientException {
-        AndroidStamp[] retValue = new ServerCommunicationService().getStampsForUser("195.178.224.74:44344/api/between", strings[0], strings[1], strings[2], strings[3]);
+        AndroidStamp[] retValue = new ServerCommunicationService().getStampsForUser(url, strings[0], strings[1], strings[2], strings[3]);
         return retValue;
     }
 

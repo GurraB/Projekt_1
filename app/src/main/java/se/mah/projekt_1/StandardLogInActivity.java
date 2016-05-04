@@ -2,10 +2,12 @@ package se.mah.projekt_1;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +33,9 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     private LinearLayout layout;
     private TextView tvFade;
     private ProgressBar progressBar;
+    private AppCompatCheckBox cbRememberMe;
+    private String encryptedUserCredentials;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,23 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
         controller = new Controller(this);
         initComponents();
         setUpToolbar();
+        setUpRememberMe();
+    }
+
+    private void setUpRememberMe() {
+        editor = getPreferences(MODE_PRIVATE).edit();
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        String username = preferences.getString("userName", "");
+        int passwordLength = preferences.getInt("passwordLength", 0);
+        encryptedUserCredentials = preferences.getString("encryptedUserCredentials", "");
+        String generatedPassword = "";
+        etUsername.setText(username);
+        for (int i = 0; i < passwordLength; i++) {
+            generatedPassword += '*';
+        }
+        etPassword.setText(generatedPassword);
+        if(encryptedUserCredentials != "")
+            cbRememberMe.setChecked(true);
     }
 
     private void setUpToolbar() {
@@ -56,6 +78,7 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
         layout = (LinearLayout) findViewById(R.id.standard_login_layout);
         tvFade = (TextView) findViewById(R.id.login_fade);
         progressBar = (ProgressBar) findViewById(R.id.login_progressbar);
+        cbRememberMe = (AppCompatCheckBox) findViewById(R.id.checkbox_remember_me);
     }
 
     @Override
@@ -69,13 +92,12 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.equals(logInButton)) {
-            String username = etUsername.getText().toString();
-            String password = etPassword.getText().toString();
-            Log.v("USERNAME", username);
-            Log.v("PASSWORD", password);
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(layout.getWindowToken(), 0);
-            controller.login(username, password);
+            if(encryptedUserCredentials == "")
+                controller.login(etUsername.getText().toString(), etPassword.getText().toString());
+            else
+                controller.login(encryptedUserCredentials);
             item.setEnabled(false);
             toolbar.setNavigationOnClickListener(null);
         }
@@ -88,6 +110,12 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     }
 
     public void onLoginSuccess(Account user) {
+        if(cbRememberMe.isChecked()) {
+            editor.putString("userName", etUsername.getText().toString());
+            editor.putInt("passwordLength", etPassword.getText().length());
+            editor.putString("encryptedUserCredentials", user.getEncryptedUserCredentials());
+            editor.commit();
+        }
         controller.startNewActivity(this, MainActivity.class, user);
         finish();
     }

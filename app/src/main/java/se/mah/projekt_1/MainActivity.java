@@ -51,9 +51,8 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
             controller.parseSavedInstance(savedInstanceState);
         setContentView(R.layout.activity_main);
         initComponents();
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null)
             controller.getServerStamps();
-        }
     }
 
     private void initComponents() {

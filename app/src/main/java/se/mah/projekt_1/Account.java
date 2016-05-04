@@ -26,6 +26,7 @@ public class Account implements Serializable {
 
     private boolean accountNonExpired = true;
     private boolean isEnabled = true;
+    private String encryptedUserCredentials;
 
     private RfidKey rfidKey;
 
@@ -85,13 +86,22 @@ public class Account implements Serializable {
         this.rfidKey = rfidKey;
     }
 
-    public void createAccountFromMap(LinkedHashMap<String, Object> accountMap) {
+    public void createAccountFromMap(LinkedHashMap<String, Object> accountMap, String encryptedUserCredentials) {
         firstName = (String) accountMap.get("firstName");
         lastName = (String) accountMap.get("lastName");
         id = (String) accountMap.get("id");
         accountNonExpired = (Boolean) accountMap.get("accountNonExpired");
         isEnabled = (Boolean) accountMap.get("enabled");
         rfidKey = new RfidKey((String) ((LinkedHashMap<String, Object>) accountMap.get("rfidKey")).get("id"));
+        this.encryptedUserCredentials = encryptedUserCredentials;
+    }
+
+    public String getEncryptedUserCredentials() {
+        return encryptedUserCredentials;
+    }
+
+    public void setEncryptedUserCredentials(String encryptedUserCredentials) {
+        this.encryptedUserCredentials = encryptedUserCredentials;
     }
 }
 

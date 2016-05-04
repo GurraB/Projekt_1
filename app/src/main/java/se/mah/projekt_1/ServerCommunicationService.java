@@ -25,10 +25,14 @@ import java.util.Map;
 public class ServerCommunicationService {
 
     public Account login(String url, String username, String password) throws RuntimeException {
+        return login(url, encryptAuthentication(username, password));
+    }
+
+    public Account login(String url, String encryptedUserCredentials) throws RuntimeException {
         RestTemplate restTemplate = createRestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + encryptAuthentication(username, password));
+        headers.add("Authorization", "Basic " + encryptedUserCredentials);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
@@ -37,7 +41,7 @@ public class ServerCommunicationService {
         LinkedHashMap<String, Object> accountMap = (LinkedHashMap<String, Object>) responseMap.get("principal");
 
         Account acc = new Account();
-        acc.createAccountFromMap(accountMap);
+        acc.createAccountFromMap(accountMap, encryptedUserCredentials);
         return acc;
     }
 
@@ -70,7 +74,7 @@ public class ServerCommunicationService {
         return restTemplate;
     }
 
-    public static String encryptAuthentication(String username, String password) {
+    private String encryptAuthentication(String username, String password) {
         String plainCreds = username + ":" + password;
         byte[] plainCredsByte = plainCreds.getBytes();
         byte[] base64 = Base64Utils.encode(plainCredsByte);

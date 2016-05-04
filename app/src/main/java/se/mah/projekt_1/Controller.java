@@ -2,6 +2,7 @@ package se.mah.projekt_1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -33,7 +34,7 @@ public class Controller {
     public void getServerStamps() {
         activity.startLoadingAnimation();
         new StampsService(this).execute(
-                ServerCommunicationService.encryptAuthentication("user", "pass"),
+                user.getEncryptedUserCredentials(),
                 user.getRfidKey().getId(),
                 String.valueOf(dateFrom.getCalendar().getTimeInMillis()),
                 String.valueOf(dateTo.getCalendar().getTimeInMillis()));
@@ -61,6 +62,11 @@ public class Controller {
         new LoginService(this).execute(username, password);
     }
 
+    public void login(String encryptedUserCredentials) {
+        activity.startLoadingAnimation();
+        new LoginService(this).execute(encryptedUserCredentials);
+    }
+
     public void startNewActivity(Context context, Class newActivity) {
         Intent intent = new Intent(context, newActivity);
         context.startActivity(intent);
@@ -77,7 +83,7 @@ public class Controller {
     }
 
     public void parseUserInformation(Bundle userInformation) {
-        user = (Account) userInformation.getSerializable("value");
+        user = (Account) userInformation.getSerializable("user");
     }
 
     public CalendarFormatter getDateFrom() {
