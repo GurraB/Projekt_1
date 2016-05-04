@@ -1,5 +1,7 @@
 package se.mah.projekt_1;
 
+import android.util.Log;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,7 +33,9 @@ public class ServerCommunicationService {
         String encryptedString = new String(base64);
         headers.add("Authorization", "Basic " + encryptedString);
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        Log.v("SERVERCOMMUNICATIONSERV", "INB4 THE LOGIN");
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
+        Log.v("SERVERCOMMUNICATIONSERV", "AFTER THE LOGIN");
 
         LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>) response.getBody();
         LinkedHashMap<String, Object> accountMap = (LinkedHashMap<String, Object>) responseMap.get("principal");
@@ -58,22 +62,25 @@ public class ServerCommunicationService {
         byte[] base64 = Base64Utils.encode(plainCredsByte);
         String encryptedString = new String(base64);
         headers.add("Authorization", "Basic " + encryptedString);
-        //headers.add("From", String.valueOf(from));
-        //headers.add("To", String.valueOf(to));
-        //headers.add("id", String.valueOf(rfid));
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("from", String.valueOf(from));
         body.add("to", String.valueOf(to));
         body.add("id", String.valueOf(rfid));
-        HttpEntity<?> requestEntity = new HttpEntity<Object>(body ,headers);
+        //headers.add("from", String.valueOf(from));
+        //headers.add("to", String.valueOf(to));
+        //headers.add("rfid", String.valueOf(rfid));
+        url += "from=" + String.valueOf(from);
+        url += "&to=" + String.valueOf(to);
+        url += "&rfid=" + String.valueOf(rfid);
+        Log.v("HEADER STRING", headers.toString());
+        HttpEntity<?> requestEntity = new HttpEntity<Object>(headers);
 
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("id", rfid);
         params.put("from", from);
         params.put("to", to);
 
-        ResponseEntity<AndroidStamp[]> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, AndroidStamp[].class);
-        //AndroidStamp[] stamps = restTemplate.postForObject(url, params, AndroidStamp[].class);
+        ResponseEntity<AndroidStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AndroidStamp[].class);
 
         AndroidStamp[] stamps = response.getBody();
 
