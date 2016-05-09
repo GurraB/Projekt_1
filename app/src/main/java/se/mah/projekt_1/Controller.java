@@ -174,6 +174,13 @@ public class Controller {
             event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorPrimaryLight));
             events.add(event);
         }
+        WeekViewEvent scheduleEvent = new WeekViewEvent(2, "schedule", 2016, 5, 9, 8, 0, 2016, 5, 9, 10, 50);
+        events.add(scheduleEvent);
+
+        WeekViewEvent event = new WeekViewEvent(1, "logged time", 2016, 5, 9, 8, 0, 2016, 5, 9, 10, 0);
+        event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorAccent));
+        events.add(event);
+        Log.v("CONTROLLER", "ADDED WEEKVIEW EVENTS " + events.size());
         return events;
     }
 
