@@ -59,7 +59,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         CalendarFormatter formatter = new CalendarFormatter(dataSet.get(position).getDate());
         holder.textViewDate.setText(formatter.toStringNoYearWithTime());
         holder.textViewCheckIn.setText((dataSet.get(position).isCheckIn() ? "Check in" : "Check out"));
-        holder.textViewColor.setBackgroundResource(colors[dataSet.get(position).getDate().get(Calendar.DAY_OF_WEEK)]);
+        holder.textViewColor.setBackgroundResource(colors[dataSet.get(position).getDate().get(Calendar.DAY_OF_WEEK) - 1]);
     }
 
     @Override

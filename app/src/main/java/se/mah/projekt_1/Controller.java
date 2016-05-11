@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Created by Gustaf on 13/04/2016.
@@ -124,8 +125,10 @@ public class Controller {
     public void finishedLoading(AndroidStamp[] stamps) {
         activity.stopLoadingAnimation();
         dataSet.clear();
+        int i = 0;
         for (AndroidStamp stamp : stamps) {
             dataSet.add(stamp);
+            Log.v("STAMP: " + i++, String.valueOf(stamp.isCheckIn()));
         }
         activity.dataRecieved(dataSet);
     }
@@ -169,19 +172,28 @@ public class Controller {
             } else {
                 endTime = stamps.get(i + 1).getDate();
             }
-
-            WeekViewEvent event = new WeekViewEvent(1, "", startTime, endTime);
+            String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
+            WeekViewEvent event = new WeekViewEvent(1, title, startTime, endTime);
             event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorPrimaryLight));
             events.add(event);
         }
-        WeekViewEvent scheduleEvent = new WeekViewEvent(2, "schedule", 2016, 5, 9, 8, 0, 2016, 5, 9, 10, 50);
+        WeekViewEvent scheduleEvent = new WeekViewEvent(2, "8:00-10:50", 2016, 5, 9, 8, 0, 2016, 5, 9, 10, 50);
         events.add(scheduleEvent);
 
-        WeekViewEvent event = new WeekViewEvent(1, "logged time", 2016, 5, 9, 8, 0, 2016, 5, 9, 10, 0);
-        event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorAccent));
+        WeekViewEvent event = new WeekViewEvent(1, "8:00-9:00", 2016, 5, 9, 8, 0, 2016, 5, 9, 9, 0);
+        WeekViewEvent event2 = new WeekViewEvent(1, "9:30-11:00", 2016, 5, 9, 9, 30, 2016, 5, 9, 11, 0);
+
+        event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorStamp));
+        event2.setColor(((MainActivity) activity).getResources().getColor(R.color.colorStamp));
+        scheduleEvent.setColor(((MainActivity) activity).getResources().getColor(R.color.colorSchedule));
         events.add(event);
+        events.add(event2);
         Log.v("CONTROLLER", "ADDED WEEKVIEW EVENTS " + events.size());
         return events;
+    }
+
+    private String formatTime(String time) {
+        return time.length() == 2 ? time : "0" + time;
     }
 
     private ArrayList<AndroidStamp> getStampsForDay(Calendar calendar) {

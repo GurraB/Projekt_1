@@ -85,6 +85,7 @@ public class GraphFragment extends Fragment {
 
     public void showGraph() {
         ArrayList<WeekViewEvent> graphEvents = controller.getGraphEvents(selectedDay);
+        Log.v("AMOUNT OF EVENTS", "WEEKVIEW EVENTS: " + String.valueOf(graphEvents.size()));
         listener.setEvents(graphEvents);
         calendarView.notifyDatasetChanged();
         etDate.setText(new CalendarFormatter(selectedDay).toStringNoYear());

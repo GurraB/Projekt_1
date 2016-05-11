@@ -18,7 +18,7 @@ import java.util.Map;
 public class LoginService extends AsyncTask<String, String, Account> {
 
     private Controller controller;
-    private String url = "http://195.178.224.74:44344/api/account";
+    private String url = "https://projektessence.se/api/account";
 
     public LoginService(Controller controller) {
         this.controller = controller;

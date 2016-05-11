@@ -33,6 +33,8 @@
             app:headerRowBackgroundColor="#ffefefef"
             app:dayBackgroundColor="#ffefefef"
             app:todayBackgroundColor="#ffefefef"
-            app:headerColumnBackground="#ffefefef" />
+            app:headerColumnBackground="#ffefefef"
+            app:eventTextColor="@color/colorText"
+        />
 
 </LinearLayout>

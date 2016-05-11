@@ -11,6 +11,8 @@
     <color name="navDrawerBackground">#fff5f5f5</color>
     <color name="black">#000000</color>
     <color name="faded">#80000000</color>
+    <color name="colorStamp">#4043a047</color>
+    <color name="colorSchedule">#403f51b5</color>
 
     <color name="c0">#F44336</color>
     <color name="c1">#2196F3</color>

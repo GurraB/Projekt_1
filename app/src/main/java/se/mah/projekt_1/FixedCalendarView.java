@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.text.style.StyleSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
@@ -738,7 +739,8 @@ public class FixedCalendarView extends View {
      */
     private void drawEvents(Calendar date, float startFromPixel, Canvas canvas) {
         if (mEventRects != null && mEventRects.size() > 0) {
-            for (int i = 0; i < mEventRects.size(); i++) {
+            Log.v("FIXEDCALENDARVIEW", "RECTS.SIZE() = " + mEventRects.size());
+            for (int i = 0; i < mEventRects.size(); i ++) {
                 if (isSameDay(mEventRects.get(i).event.getStartTime(), date)) {
 
                     // Calculate top.
@@ -749,10 +751,15 @@ public class FixedCalendarView extends View {
                     bottom = mHourHeight * 24 * bottom / 1440 + mCurrentOrigin.y + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight/2 - mEventMarginVertical;
 
                     // Calculate left and right.
-                    float left = startFromPixel + mEventRects.get(i).left * mWidthPerDay;
+                    float left;
+                    if(mEventRects.get(i).originalEvent.getId() == 2)
+                        left = startFromPixel + (mWidthPerDay / 2);
+                    else
+                        left = startFromPixel;
+
                     if (left < startFromPixel)
                         left += mOverlappingEventGap;
-                    float right = left + mEventRects.get(i).width * mWidthPerDay;
+                    float right = left + mEventRects.get(i).width * mWidthPerDay * 2;
                     if (right < startFromPixel + mWidthPerDay)
                         right -= mOverlappingEventGap;
 
@@ -767,6 +774,7 @@ public class FixedCalendarView extends View {
                         mEventBackgroundPaint.setColor(mEventRects.get(i).event.getColor() == 0 ? mDefaultEventColor : mEventRects.get(i).event.getColor());
                         canvas.drawRoundRect(mEventRects.get(i).rectF, mEventCornerRadius, mEventCornerRadius, mEventBackgroundPaint);
                         drawEventTitle(mEventRects.get(i).event, mEventRects.get(i).rectF, canvas, top, left);
+                        drawEventTail(mEventRects.get(i).event, mEventRects.get(i).rectF, canvas, bottom, left, right);
                     }
                     else
                         mEventRects.get(i).rectF = null;
@@ -774,7 +782,6 @@ public class FixedCalendarView extends View {
             }
         }
     }
-
 
     /**
      * Draw the name of the event on top of the event rectangle.
@@ -791,8 +798,8 @@ public class FixedCalendarView extends View {
         // Prepare the name of the event.
         SpannableStringBuilder bob = new SpannableStringBuilder();
         if (event.getName() != null) {
-            bob.append(event.getName());
-            bob.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, bob.length(), 0);
+            bob.append(event.getName().substring(0, event.getName().indexOf('-')));
+            bob.setSpan(new StyleSpan(Typeface.NORMAL), 0, bob.length(), 0);
             bob.append(' ');
         }
 
@@ -825,6 +832,52 @@ public class FixedCalendarView extends View {
             // Draw text.
             canvas.save();
             canvas.translate(originalLeft + mEventPadding, originalTop + mEventPadding);
+            textLayout.draw(canvas);
+            canvas.restore();
+        }
+    }
+
+
+    private void drawEventTail(WeekViewEvent event, RectF rect, Canvas canvas, float originalBottom, float originalLeft, float originalRight) {
+        if (rect.right - rect.left - mEventPadding * 2 < 0) return;
+        if (rect.bottom - rect.top - mEventPadding * 2 < 0) return;
+
+        // Prepare the name of the event.
+        SpannableStringBuilder bob = new SpannableStringBuilder();
+        if (event.getName() != null) {
+            bob.append(event.getName().substring(event.getName().indexOf('-') + 1, event.getName().length()));
+            bob.setSpan(new StyleSpan(Typeface.NORMAL), 0, bob.length(), 0);
+            bob.append(' ');
+        }
+        // Prepare the location of the event.
+        if (event.getLocation() != null) {
+            bob.append(event.getLocation());
+        }
+
+        int availableWidth = (int) (rect.right - originalLeft - mEventPadding * 2);
+
+        // Get text dimensions.
+        StaticLayout textLayout = new StaticLayout(bob, mEventTextPaint, availableWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+
+        int lineHeight = textLayout.getHeight() / textLayout.getLineCount();
+        int availableHeight = lineHeight;
+        Log.v("AAAAA", String.valueOf(availableHeight));
+        Log.v("AAAAA", String.valueOf(lineHeight));
+        if (availableHeight >= lineHeight) {
+            // Calculate available number of line counts.
+            int availableLineCount = availableHeight / lineHeight;
+            do {
+                // Ellipsize text to fit into event rect.
+                textLayout = new StaticLayout(TextUtils.ellipsize(bob, mEventTextPaint, availableLineCount * availableWidth, TextUtils.TruncateAt.END), mEventTextPaint, (int) (rect.right - originalLeft - mEventPadding * 2), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+                // Reduce line count.
+                availableLineCount--;
+            } while (textLayout.getHeight() > availableHeight);
+            Log.v("EVENT TAIL SPECS", "RIGHT - WIDTH: " + String.valueOf(originalRight - textLayout.getEllipsizedWidth()));
+            Log.v("EVENT TAIL SPECS", "RIGHT: " + String.valueOf(originalRight));
+
+            // Draw text.
+            canvas.save();
+            canvas.translate(originalRight - textLayout.getLineWidth(0) - mEventPadding, originalBottom - mEventPadding - textLayout.getHeight());
             textLayout.draw(canvas);
             canvas.restore();
         }
