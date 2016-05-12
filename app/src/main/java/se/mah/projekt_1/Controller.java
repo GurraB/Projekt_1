@@ -128,7 +128,7 @@ public class Controller {
         int i = 0;
         for (AndroidStamp stamp : stamps) {
             dataSet.add(stamp);
-            Log.v("STAMP: " + i++, String.valueOf(stamp.isCheckIn()));
+            Log.v("STAMP: " + i++, stamp.toString());
         }
         activity.dataRecieved(dataSet);
     }
@@ -177,18 +177,6 @@ public class Controller {
             event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorPrimaryLight));
             events.add(event);
         }
-        WeekViewEvent scheduleEvent = new WeekViewEvent(2, "8:00-10:50", 2016, 5, 9, 8, 0, 2016, 5, 9, 10, 50);
-        events.add(scheduleEvent);
-
-        WeekViewEvent event = new WeekViewEvent(1, "8:00-9:00", 2016, 5, 9, 8, 0, 2016, 5, 9, 9, 0);
-        WeekViewEvent event2 = new WeekViewEvent(1, "9:30-11:00", 2016, 5, 9, 9, 30, 2016, 5, 9, 11, 0);
-
-        event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorStamp));
-        event2.setColor(((MainActivity) activity).getResources().getColor(R.color.colorStamp));
-        scheduleEvent.setColor(((MainActivity) activity).getResources().getColor(R.color.colorSchedule));
-        events.add(event);
-        events.add(event2);
-        Log.v("CONTROLLER", "ADDED WEEKVIEW EVENTS " + events.size());
         return events;
     }
 

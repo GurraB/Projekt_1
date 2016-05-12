@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Created by Gustaf on 06/04/2016.
@@ -21,6 +22,11 @@ public class AndroidStamp implements Serializable {
 
     public AndroidStamp() {
 
+    }
+
+    public String toString() {
+        CalendarFormatter formatter = new CalendarFormatter(date);
+        return "AndroidStamp: " + formatter.toStringNoYearWithTime() + " | " + checkIn;
     }
 
     /**
@@ -46,6 +52,7 @@ public class AndroidStamp implements Serializable {
      * @param date the date
      */
     public void setDate(Calendar date) {
+        date.set(Calendar.HOUR_OF_DAY, date.get(Calendar.HOUR_OF_DAY) + 2);
         this.date = date;
     }
 

@@ -60,37 +60,6 @@ public class ServerCommunicationService {
         return login(url, encryptAuthentication(username, password));
     }
 
-    /*public Account login(String url, String encryptedUserCredentials) throws RuntimeException {
-        Account acc = new Account();
-        acc.setFirstName("Gustaf");
-        acc.setLastName("Bohlin");
-        acc.setRfidKey(new RfidKey("AAAAAAAA"));
-        acc.setEncryptedUserCredentials("");
-        acc.setUsername("");
-        return acc;
-    }*/
-
-    private class aids extends SimpleClientHttpRequestFactory {
-        @Override
-        protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-            if (connection instanceof HttpsURLConnection)
-                ((HttpsURLConnection) connection).setHostnameVerifier(new NullHostnameVerifier());
-            super.prepareConnection(connection, httpMethod);
-        }
-    }
-
-    private class NullHostnameVerifier implements HostnameVerifier {
-
-        @Override
-        public boolean verify(String s, SSLSession sslSession) {
-            return true;
-        }
-    }
-
-    public Account login(String url, String encryptedUserCredentials) throws RuntimeException {
-        return testLogin(url, encryptedUserCredentials);
-    }
-
     public static void trustSelfSignedSSL() {
         try {
             SSLContext ctx = SSLContext.getInstance("TLS");
@@ -113,12 +82,8 @@ public class ServerCommunicationService {
         }
     }
 
-
-    public Account testLogin(String url1, String encryptedUserCredentials) throws RuntimeException {
-        BasicAuthRestTemplate restTemplate = new BasicAuthRestTemplate("user", "pass");
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        trustSelfSignedSSL();
-        String url = "https://projektessence.se/api/account";
+    public Account login(String url, String encryptedUserCredentials) throws RuntimeException {
+        BasicAuthRestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + encryptedUserCredentials);
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
@@ -135,14 +100,10 @@ public class ServerCommunicationService {
 
     public AndroidStamp[] getStampsForUser(String url, String encryptedUserCredentials, String rfid, String from, String to) {
 
-        BasicAuthRestTemplate restTemplate = new BasicAuthRestTemplate("user", "pass");
-        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        trustSelfSignedSSL();
+        BasicAuthRestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + encryptedUserCredentials);
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
-        url = "https://projektessence.se/api/android/between";
 
         //Temporary url TODO change to URIComponentBuilder
         url += "&";
@@ -158,7 +119,7 @@ public class ServerCommunicationService {
     }
 
     public ScheduleStamp[] getScheduleForUser(String url, String encryptedUserCredentials, String rfid, String from, String to) {
-        RestTemplate restTemplate = createRestTemplate();
+        RestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + encryptedUserCredentials);
@@ -177,12 +138,10 @@ public class ServerCommunicationService {
         return stamps;
     }
 
-    private RestTemplate createRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
+    private BasicAuthRestTemplate createRestTemplate(String encryptedUserCredentials) {
+        BasicAuthRestTemplate restTemplate = new BasicAuthRestTemplate(encryptedUserCredentials);
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
-        requestFactory.setReadTimeout(3000);    //Timeout after 3 seconds
-        requestFactory.setConnectTimeout(3000);
+        trustSelfSignedSSL();
         return restTemplate;
     }
 

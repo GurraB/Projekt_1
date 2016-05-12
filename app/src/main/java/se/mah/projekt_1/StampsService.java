@@ -15,8 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class StampsService extends AsyncTask<String, String, AndroidStamp[]>{
 
     private Controller controller;
-    private String Mangeurl = "http://195.178.224.74:44344/api/android/between";
-    private String url = "http://52.29.168.216:443/api/android/between";
+    private String url = "https://projektessence.se/api/android/between";
 
     /**
      * Constructor

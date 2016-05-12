@@ -1,12 +1,7 @@
 package se.mah.projekt_1;
 
-import android.util.Base64;
-
 import org.springframework.http.HttpAuthentication;
-import org.springframework.http.HttpBasicAuthentication;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -15,7 +10,6 @@ import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -80,7 +74,7 @@ public class BasicAuthRestTemplate extends RestTemplate {
             }
             else
                 encryptedCreds = encryptedUserCredentials;
-            HttpAuthentication authHeader = new HttpBasicAuthentication(username, password);
+            HttpAuthentication authHeader = new HttpBasicAuthentication(encryptedCreds);
             request.getHeaders().setAuthorization(authHeader);
             return execution.execute(request, body);
         }

@@ -23,8 +23,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             R.color.c2,
             R.color.c3,
             R.color.c4,
-            R.color.c6,
-            R.color.c5,};
+            R.color.c5,
+            R.color.c6,};
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
