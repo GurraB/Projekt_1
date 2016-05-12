@@ -751,17 +751,17 @@ public class FixedCalendarView extends View {
                     bottom = mHourHeight * 24 * bottom / 1440 + mCurrentOrigin.y + mHeaderTextHeight + mHeaderRowPadding * 2 + mHeaderMarginBottom + mTimeTextHeight/2 - mEventMarginVertical;
 
                     // Calculate left and right.
-                    float left;
-                    if(mEventRects.get(i).originalEvent.getId() == 2)
-                        left = startFromPixel + (mWidthPerDay / 2);
-                    else
+                    float left, right;
+                    if(mEventRects.get(i).originalEvent.getId() == 2) {
+                        left = startFromPixel + mWidthPerDay / 2;
+                        right = mWidthPerDay;
+                    }
+                    else {
                         left = startFromPixel;
-
+                        right = startFromPixel + mWidthPerDay / 2;
+                    }
                     if (left < startFromPixel)
                         left += mOverlappingEventGap;
-                    float right = left + mEventRects.get(i).width * mWidthPerDay * 2;
-                    if (right < startFromPixel + mWidthPerDay)
-                        right -= mOverlappingEventGap;
 
                     // Draw the event and the event name on top of it.
                     if (left < right &&

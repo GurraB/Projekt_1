@@ -20,10 +20,12 @@ import java.util.List;
 public class Controller {
 
     private ArrayList<AndroidStamp> dataSet = new ArrayList<>();
+    private ArrayList<ScheduleStamp> schedule = new ArrayList<>();
     private CalendarFormatter dateFrom, dateTo;
     private Account user;
     private AsyncTaskCompatible activity;
     private boolean sortAscending = true;
+
 
     public Controller(AsyncTaskCompatible activity) {
         this.activity = activity;
@@ -37,6 +39,14 @@ public class Controller {
         new StampsService(this).execute(
                 user.getEncryptedUserCredentials(),
                 user.getRfidKey().getId(),
+                String.valueOf(dateFrom.getCalendar().getTimeInMillis()),
+                String.valueOf(dateTo.getCalendar().getTimeInMillis()));
+    }
+
+    public void getSchedule() {
+        activity.startLoadingAnimation();
+        new ScheduleService(this).execute(user.getEncryptedUserCredentials(),
+                user.getId(),
                 String.valueOf(dateFrom.getCalendar().getTimeInMillis()),
                 String.valueOf(dateTo.getCalendar().getTimeInMillis()));
     }
@@ -131,6 +141,17 @@ public class Controller {
             Log.v("STAMP: " + i++, stamp.toString());
         }
         activity.dataRecieved(dataSet);
+        //getSchedule();
+    }
+
+    public void finishedLoading(ScheduleStamp[] stamps) {
+        activity.stopLoadingAnimation();
+        schedule.clear();
+        int i = 0;
+        for (ScheduleStamp stamp : stamps) {
+            schedule.add(stamp);
+            Log.v("SCHEDULESTAMP: " + i++, stamp.toString());
+        }
     }
 
     public void finishedLoading(Account user) {
@@ -154,6 +175,7 @@ public class Controller {
         if (selectedDay == null)
             selectedDay = Calendar.getInstance();
         ArrayList<AndroidStamp> stamps = getStampsForDay(selectedDay);
+        Collections.sort(stamps, new AndroidStampSortAscending());
         if (stamps == null)
             stamps = new ArrayList();
         ArrayList<WeekViewEvent> events = new ArrayList<>();
