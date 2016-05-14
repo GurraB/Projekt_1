@@ -24,7 +24,6 @@ public class Controller {
     private CalendarFormatter dateFrom, dateTo;
     private Account user;
     private AsyncTaskCompatible activity;
-    private boolean sortAscending = true;
 
 
     public Controller(AsyncTaskCompatible activity) {
@@ -140,6 +139,7 @@ public class Controller {
             dataSet.add(stamp);
             Log.v("STAMP: " + i++, stamp.toString());
         }
+        Collections.sort(dataSet, new AndroidStampSortDescending());
         activity.dataRecieved(dataSet);
         //getSchedule();
     }
@@ -220,13 +220,11 @@ public class Controller {
 
     public void sortAscending() {
         Collections.sort(dataSet, new AndroidStampSortAscending());
-        sortAscending = true;
         ((MainActivity) activity).setDataSet(dataSet);
     }
 
     public void sortDescending() {
         Collections.sort(dataSet, new AndroidStampSortDescending());
-        sortAscending = false;
         ((MainActivity) activity).setDataSet(dataSet);
     }
 }
