@@ -754,7 +754,7 @@ public class FixedCalendarView extends View {
                     float left, right;
                     if(mEventRects.get(i).originalEvent.getId() == 2) {
                         left = startFromPixel + mWidthPerDay / 2;
-                        right = mWidthPerDay;
+                        right = startFromPixel + mWidthPerDay;
                     }
                     else {
                         left = startFromPixel;

@@ -1,25 +1,20 @@
 package se.mah.projekt_1;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
  * Created by Gustaf on 05/05/2016.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ScheduleStamp implements Serializable {
 
     private long from;
     private long to;
-    private String rfid;
+    private String[] userId;
 
     public ScheduleStamp() {}
-
-    public String getRfid() {
-        return rfid;
-    }
-
-    public void setRfid(String rfid) {
-        this.rfid = rfid;
-    }
 
     public long getTo() {
         return to;
@@ -35,5 +30,13 @@ public class ScheduleStamp implements Serializable {
 
     public void setFrom(long from) {
         this.from = from;
+    }
+
+    public String[] getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String[] userId) {
+        this.userId = userId;
     }
 }

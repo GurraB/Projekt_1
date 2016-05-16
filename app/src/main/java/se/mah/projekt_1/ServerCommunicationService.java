@@ -118,7 +118,7 @@ public class ServerCommunicationService {
         return stamps;
     }
 
-    public ScheduleStamp[] getScheduleForUser(String url, String encryptedUserCredentials, String rfid, String from, String to) {
+    public ScheduleStamp[] getScheduleForUser(String url, String encryptedUserCredentials, String id, String from, String to) {
         BasicAuthRestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + encryptedUserCredentials);
@@ -128,7 +128,7 @@ public class ServerCommunicationService {
         url += "&";
         url += "from=" + from;
         url += "&to=" + to;
-        url += "&id=" + rfid;
+        url += "&id=" + id;
         Log.v("HEADER STRING", headers.toString());
 
         ResponseEntity<ScheduleStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, ScheduleStamp[].class);

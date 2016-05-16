@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 public class ScheduleService extends AsyncTask<String, String, ScheduleStamp[]> {
 
     private Controller controller;
-    private String url = "https://projektessence.se/api/schedule";
+    private String url = "https://projektessence.se/api/schedule/between";
 
     public ScheduleService(Controller controller) { this.controller = controller; }
 

@@ -141,7 +141,7 @@ public class Controller {
         }
         Collections.sort(dataSet, new AndroidStampSortDescending());
         activity.dataRecieved(dataSet);
-        //getSchedule();
+        getSchedule();
     }
 
     public void finishedLoading(ScheduleStamp[] stamps) {
@@ -152,6 +152,7 @@ public class Controller {
             schedule.add(stamp);
             Log.v("SCHEDULESTAMP: " + i++, stamp.toString());
         }
+        activity.dataRecieved(dataSet);
     }
 
     public void finishedLoading(Account user) {
@@ -175,9 +176,12 @@ public class Controller {
         if (selectedDay == null)
             selectedDay = Calendar.getInstance();
         ArrayList<AndroidStamp> stamps = getStampsForDay(selectedDay);
+        ArrayList<ScheduleStamp> scheduleStamps = getScheduleForDay(selectedDay);
         Collections.sort(stamps, new AndroidStampSortAscending());
         if (stamps == null)
             stamps = new ArrayList();
+        if(schedule == null)
+            scheduleStamps = new ArrayList<>();
         ArrayList<WeekViewEvent> events = new ArrayList<>();
 
         for (int i = 0; i < stamps.size(); i += 2) {
@@ -199,6 +203,16 @@ public class Controller {
             event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorPrimaryLight));
             events.add(event);
         }
+        for (int i = 0; i < scheduleStamps.size(); i++) {
+            Calendar startTime = Calendar.getInstance();
+            Calendar endTime = Calendar.getInstance();
+            startTime.setTimeInMillis(scheduleStamps.get(i).getFrom());
+            endTime.setTimeInMillis(scheduleStamps.get(i).getTo());
+            String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
+            WeekViewEvent event = new WeekViewEvent(2, title, startTime, endTime);
+            event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorSchedule));
+            events.add(event);
+        }
         return events;
     }
 
@@ -215,6 +229,27 @@ public class Controller {
                     androidStamp.getDate().get(Calendar.MONTH) == calendar.get(Calendar.MONTH) &&
                     androidStamp.getDate().get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH))
                 stamps.add(androidStamp);
+        return stamps;
+    }
+
+    private ArrayList<ScheduleStamp> getScheduleForDay(Calendar calendar) {
+        ArrayList<ScheduleStamp> stamps = new ArrayList<>();
+        if (schedule == null)
+            return null;
+        for (ScheduleStamp scheduleStamp : schedule) {
+            Calendar fromDate = Calendar.getInstance();
+            Calendar toDate = Calendar.getInstance();
+            fromDate.setTimeInMillis(scheduleStamp.getFrom());
+            toDate.setTimeInMillis(scheduleStamp.getTo());
+            if ((fromDate.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
+                 fromDate.get(Calendar.MONTH) == calendar.get(Calendar.MONTH) &&
+                 fromDate.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH))
+                 ||
+                (toDate.get(Calendar.YEAR) == calendar.get(Calendar.YEAR) &&
+                 toDate.get(Calendar.MONTH) == calendar.get(Calendar.MONTH) &&
+                 toDate.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH)))
+                stamps.add(scheduleStamp);
+        }
         return stamps;
     }
 
