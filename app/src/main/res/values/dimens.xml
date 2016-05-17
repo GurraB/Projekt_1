@@ -6,7 +6,7 @@
     <dimen name="nav_drawer_elevation">7dp</dimen>
     <dimen name="nav_drawer_width">240dp</dimen>
     <dimen name="nav_drawer_tv_width">60dp</dimen>
-    <dimen name="nav_drawer_et_width">100dp</dimen>
+    <dimen name="nav_drawer_et_width">120dp</dimen>
     <dimen name="nav_drawer_toolbar_elevation">4dp</dimen>
     <dimen name="nav_drawer_toolbar_tv_size">25dp</dimen>
     <dimen name="recycler_row_padding">5dp</dimen>

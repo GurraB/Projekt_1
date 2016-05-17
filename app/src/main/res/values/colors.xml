@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryLight">#804b60d7</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryLight">#BBDEFB</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FF5722</color>
     <color name="colorText">#FFFFFF</color>
     <color name="colorTextDark">#c4c4c4</color>
     <color name="colorDivider">#B6B6B6</color>
@@ -13,6 +13,7 @@
     <color name="faded">#80000000</color>
     <color name="colorStamp">#4043a047</color>
     <color name="colorSchedule">#403f51b5</color>
+    <color name="colorAccentFaded">#40ff5722</color>
 
     <color name="c0">#F44336</color>
     <color name="c1">#2196F3</color>

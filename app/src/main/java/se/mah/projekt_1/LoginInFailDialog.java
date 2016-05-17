@@ -15,9 +15,9 @@ public class LoginInFailDialog {
         this.context = context;
     }
 
-    public AlertDialog.Builder create() {
+    public AlertDialog.Builder create(String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-        alertDialogBuilder.setMessage("Wrong Username or Password");
+        alertDialogBuilder.setMessage(message);
         alertDialogBuilder.setTitle("Login failed");
         alertDialogBuilder.setPositiveButton("OK", null);
         return alertDialogBuilder;

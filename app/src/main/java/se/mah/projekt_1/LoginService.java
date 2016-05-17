@@ -27,8 +27,8 @@ public class LoginService extends AsyncTask<String, String, Account> {
     @Override
     protected Account doInBackground(String... strings) {
         if(strings.length == 2)
-            return new ServerCommunicationService().login(url, strings[0], strings[1]);
-        return new ServerCommunicationService().login(url, strings[0]);
+            return new ServerCommunicationService(controller).login(url, strings[0], strings[1]);
+        return new ServerCommunicationService(controller).login(url, strings[0]);
     }
 
     @Override

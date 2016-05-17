@@ -14,7 +14,7 @@ public class ScheduleService extends AsyncTask<String, String, ScheduleStamp[]> 
 
     @Override
     protected ScheduleStamp[] doInBackground(String... strings) {
-        ScheduleStamp[] retValue = new ServerCommunicationService().getScheduleForUser(url, strings[0], strings[1], strings[2], strings[3]);
+        ScheduleStamp[] retValue = new ServerCommunicationService(controller).getScheduleForUser(url, strings[0], strings[1], strings[2], strings[3]);
         return retValue;
     }
 

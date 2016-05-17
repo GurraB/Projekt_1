@@ -2,9 +2,11 @@ package se.mah.projekt_1;
 
 import android.net.SSLCertificateSocketFactory;
 import android.provider.MediaStore;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 
+import org.springframework.http.HttpAuthentication;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,91 +58,101 @@ import javax.security.cert.CertificateExpiredException;
  */
 public class ServerCommunicationService {
 
+    private Controller controller;
+
+    public ServerCommunicationService(Controller controller) {
+        this.controller = controller;
+    }
+
     public Account login(String url, String username, String password) throws RuntimeException {
         return login(url, encryptAuthentication(username, password));
     }
 
-    public static void trustSelfSignedSSL() {
-        try {
-            SSLContext ctx = SSLContext.getInstance("TLS");
-            X509TrustManager tm = new X509TrustManager() {
-
-                public void checkClientTrusted(X509Certificate[] xcs, String string) {
-                }
-
-                public void checkServerTrusted(X509Certificate[] xcs, String string) {
-                }
-
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-            };
-            ctx.init(null, new TrustManager[]{tm}, null);
-            SSLContext.setDefault(ctx);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+    private void showConnectionErrorMessage(final Controller.ErrorType type, final String message) {
+        ((AppCompatActivity)controller.getActivity()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                controller.showConnectionErrorMessage(type, message);
+            }
+        });
     }
 
     public Account login(String url, String encryptedUserCredentials) throws RuntimeException {
-        BasicAuthRestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + encryptedUserCredentials);
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = createRestTemplate();
+        HttpEntity<String> requestEntity = createHttpEntity(encryptedUserCredentials);
 
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
-        LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>) response.getBody();
-        LinkedHashMap<String, Object> accountMap = (LinkedHashMap<String, Object>) responseMap.get("principal");
-
-        Account acc = new Account();
-        acc.createAccountFromMap(accountMap, encryptedUserCredentials);
-        Log.v("ACCOUNT", acc.toString());
+        Account acc = null;
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, Map.class);
+            LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>) response.getBody();
+            LinkedHashMap<String, Object> accountMap = (LinkedHashMap<String, Object>) responseMap.get("principal");
+            acc = new Account();
+            acc.createAccountFromMap(accountMap, encryptedUserCredentials);
+            Log.v("ACCOUNT", acc.toString());
+        } catch (Exception e) {
+            Log.e("LOGIN_EXCEPTION", e.getMessage());
+            if(e.getMessage().equals("401 Unauthorized"))
+                showConnectionErrorMessage(Controller.ErrorType.UNATHORIZED, "");
+            else
+                showConnectionErrorMessage(Controller.ErrorType.CONNECTION_ERROR, "");
+        }
         return acc;
     }
 
     public AndroidStamp[] getStampsForUser(String url, String encryptedUserCredentials, String rfid, String from, String to) {
 
-        BasicAuthRestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + encryptedUserCredentials);
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = createRestTemplate();
+        HttpEntity<String> requestEntity = createHttpEntity(encryptedUserCredentials);
 
         //Temporary url TODO change to URIComponentBuilder
         url += "&";
         url += "from=" + from;
         url += "&to=" + to;
         url += "&rfid=" + rfid;
-        Log.v("HEADER STRING", headers.toString());
 
-        ResponseEntity<AndroidStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AndroidStamp[].class);
-        AndroidStamp[] stamps = response.getBody();
 
+        AndroidStamp[] stamps = new AndroidStamp[0];
+        try {
+            ResponseEntity<AndroidStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AndroidStamp[].class);
+            stamps = response.getBody();
+        } catch (Exception e) {
+            showConnectionErrorMessage(Controller.ErrorType.CONNECTION_ERROR, "");
+        }
         return stamps;
     }
 
     public ScheduleStamp[] getScheduleForUser(String url, String encryptedUserCredentials, String id, String from, String to) {
-        BasicAuthRestTemplate restTemplate = createRestTemplate(encryptedUserCredentials);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + encryptedUserCredentials);
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        RestTemplate restTemplate = createRestTemplate();
+        HttpEntity<String> requestEntity = createHttpEntity(encryptedUserCredentials);
 
         //Temporary url TODO change to URIComponentBuilder
-        url += "&";
+        /*url += "&";
         url += "from=" + from;
         url += "&to=" + to;
-        url += "&id=" + id;
-        Log.v("HEADER STRING", headers.toString());
+        url += "&id=" + id;*/
+        url = buildURI(url, from, to, id);
 
-        ResponseEntity<ScheduleStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, ScheduleStamp[].class);
-        ScheduleStamp[] stamps = response.getBody();
+        ScheduleStamp[] stamps = new ScheduleStamp[0];
+        try {
+            ResponseEntity<ScheduleStamp[]> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, ScheduleStamp[].class);
+            stamps = response.getBody();
+        } catch (Exception e) {
+            showConnectionErrorMessage(Controller.ErrorType.CONNECTION_ERROR, "");
+        }
         return stamps;
     }
 
-    private BasicAuthRestTemplate createRestTemplate(String encryptedUserCredentials) {
-        BasicAuthRestTemplate restTemplate = new BasicAuthRestTemplate(encryptedUserCredentials);
+    private RestTemplate createRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-        trustSelfSignedSSL();
         return restTemplate;
+    }
+
+    private HttpEntity createHttpEntity(String encryptedUserCredentials) {
+        HttpAuthentication auth = new HttpBasicAuthentication(encryptedUserCredentials);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAuthorization(auth);
+        return new HttpEntity(headers);
     }
 
     private String encryptAuthentication(String username, String password) {
@@ -158,8 +170,9 @@ public class ServerCommunicationService {
         param.set(0, to);
         map.put("to", param);
         param.set(0, rfid);
-        map.put("rfid", param);
+        map.put("id", param);
         UriComponents uriComp = UriComponentsBuilder.fromUriString(uri).queryParams(map).build();
-        return uriComp.toString();
+        String completeUri = uriComp.toString().replace('?', '&');
+        return completeUri;
     }
 }

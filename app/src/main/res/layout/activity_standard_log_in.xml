@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/standard_login_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:dividerPadding="@dimen/activity_vertical_margin"
         android:orientation="vertical">
 
@@ -16,16 +16,16 @@
             android:id="@+id/standard_log_in_app_bar"
             layout="@layout/app_bar" />
 
-        <ImageView
+        <!--<ImageView
             android:layout_width="@dimen/logo_size"
             android:layout_height="@dimen/logo_size"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:src="@drawable/project_image"
-            android:transitionName="@string/transition1" />
+            android:transitionName="@string/transition1" />-->
 
-        <AutoCompleteTextView
-            android:id="@+id/autoComplete"
+        <EditText
+            android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
@@ -64,6 +64,14 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivNfcLoginAnimation"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_below="@+id/standard_login_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
     <TextView
         android:id="@+id/login_fade"

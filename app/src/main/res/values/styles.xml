@@ -6,6 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:datePickerDialogTheme">@style/CustomDatePickerDialogTheme</item>
+
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
@@ -17,10 +20,20 @@
 
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.Dark">
         <item name="android:absListViewStyle">@android:style/ThemeOverlay.Material.Light</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:colorBackground">#FFF</item>
     </style>
 
     <style name="ThemeOverlay.ToolbarPopup" parent="ThemeOverlay.AppCompat.Dark">
         <item name="android:popupTheme">@style/Theme.AppCompat.Light</item>
     </style>
 
+    <style name="CustomDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomDatePickerStyle" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:headerBackground">@color/colorPrimary</item>
+    </style>
 </resources>

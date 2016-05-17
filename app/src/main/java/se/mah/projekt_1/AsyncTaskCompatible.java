@@ -10,7 +10,7 @@ public interface AsyncTaskCompatible {
     void dataRecieved(ArrayList<AndroidStamp> stamps);
     void startLoadingAnimation();
     void stopLoadingAnimation();
-    void showConnectionErrorMessage(String message, boolean retry);
+    void showConnectionErrorMessage(Controller.ErrorType type, String message);
     void onLoginSuccess(Account user);
     void onLoginFail();
 }

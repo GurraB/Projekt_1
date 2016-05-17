@@ -19,6 +19,12 @@ import java.util.List;
  */
 public class Controller {
 
+    public enum ErrorType {
+        UNATHORIZED,
+        CONNECTION_ERROR,
+        BAD_REQUEST
+    }
+
     private ArrayList<AndroidStamp> dataSet = new ArrayList<>();
     private ArrayList<ScheduleStamp> schedule = new ArrayList<>();
     private CalendarFormatter dateFrom, dateTo;
@@ -28,6 +34,10 @@ public class Controller {
 
     public Controller(AsyncTaskCompatible activity) {
         this.activity = activity;
+    }
+
+    public AsyncTaskCompatible getActivity() {
+        return activity;
     }
 
     public Controller() {
@@ -160,12 +170,10 @@ public class Controller {
 
         if(user != null)
             activity.onLoginSuccess(user);
-        else
-            activity.onLoginFail();    //null om servern inte är uppe
     }
 
-    public void showConnectionErrorMessage(String message, boolean retry) {
-        activity.showConnectionErrorMessage(message, retry);
+    public void showConnectionErrorMessage(ErrorType type, String message) {
+        activity.showConnectionErrorMessage(type, message);
     }
 
     public Account getUser() {
@@ -183,6 +191,17 @@ public class Controller {
         if(schedule == null)
             scheduleStamps = new ArrayList<>();
         ArrayList<WeekViewEvent> events = new ArrayList<>();
+
+        if(stamps.size() > 0) {
+            if(!stamps.get(0).isCheckIn()) {
+                Calendar checkIn = Calendar.getInstance();
+                checkIn.setTimeInMillis(selectedDay.getTimeInMillis());
+                checkIn.set(Calendar.HOUR_OF_DAY, 0);
+                checkIn.set(Calendar.MINUTE, 0);
+                checkIn.set(Calendar.SECOND, 1);
+                stamps.add(0, new AndroidStamp(checkIn, true));
+            }
+        }
 
         for (int i = 0; i < stamps.size(); i += 2) {
             Calendar startTime = stamps.get(i).getDate();

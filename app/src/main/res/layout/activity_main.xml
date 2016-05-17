@@ -80,7 +80,8 @@
                         android:id="@+id/nav_drawer_from"
                         android:layout_width="@dimen/nav_drawer_et_width"
                         android:layout_height="wrap_content"
-                        android:editable="false" />
+                        android:editable="false"
+                        android:textAlignment="center"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -97,7 +98,8 @@
                         android:id="@+id/nav_drawer_to"
                         android:layout_width="@dimen/nav_drawer_et_width"
                         android:layout_height="wrap_content"
-                        android:editable="false" />
+                        android:editable="false"
+                        android:textAlignment="center"/>
                 </LinearLayout>
 
             </LinearLayout>

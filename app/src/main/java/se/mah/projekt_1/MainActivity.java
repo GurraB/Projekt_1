@@ -4,7 +4,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private DrawerLayout drawer;
     private RelativeLayout left_drawer;
     private MenuItem sort;
-    private ActionHandler drawerListener;
+    private ActionHandler actionHandler;
     private LogFragment logFragment;
     private GraphFragment graphFragment;
     private ArrayList<AndroidStamp> dataSet = new ArrayList<>();
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
             Log.v("MAINACTIVITY", "BUNDLE IS NULL");
 
         findComponents();
-        drawerListener = new ActionHandler(this, drawer, left_drawer, toolbar, R.string.open_drawer_string, R.string.close_drawer_string, controller);
+        actionHandler = new ActionHandler(this, drawer, left_drawer, toolbar, R.string.open_drawer_string, R.string.close_drawer_string, controller);
         setUpToolbar();
         setUpViewPager();
         setUpNavDrawer();
@@ -104,6 +103,11 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
                 break;
             case R.id.sort_oldest_first:
                 controller.sortAscending();
+                break;
+            case R.id.logout:
+                controller.startNewActivity(this, StandardLogInActivity.class);
+                finish();
+                break;
         }
         return true;
     }
@@ -126,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     public void setUpToolbar() {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_date_range_white2_24dp);
-        toolbar.setNavigationOnClickListener(drawerListener);
+        toolbar.setNavigationOnClickListener(actionHandler);
         getSupportActionBar().setTitle(controller.getDateFrom().toStringNoYear() + " - " + controller.getDateTo().toStringNoYear());
     }
 
@@ -134,10 +138,10 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
      * Initialize the navigation drawer
      */
     private void setUpNavDrawer() {
-        drawer.addDrawerListener(drawerListener);
+        drawer.addDrawerListener(actionHandler);
         drawer.closeDrawer(left_drawer);
-        etTo.setOnClickListener(drawerListener);
-        etFrom.setOnClickListener(drawerListener);
+        etTo.setOnClickListener(actionHandler);
+        etFrom.setOnClickListener(actionHandler);
         userName.setText(controller.getUser().getName());
     }
 
@@ -149,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         adapter.addFragment(logFragment = LogFragment.newInstance(dataSet), "Log");
         adapter.addFragment(graphFragment = GraphFragment.newInstance(controller), "Graphs");
         viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(drawerListener);
+        viewPager.addOnPageChangeListener(actionHandler);
     }
 
     private void setViewPagerIcons() {
@@ -177,24 +181,35 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     }
 
     public ActionHandler getActionHandler() {
-        return drawerListener;
+        return actionHandler;
     }
 
     /**
      * Shows a snackbar displaying that the server can't be reached
      */
     @Override
-    public void showConnectionErrorMessage(final String message, boolean retry) {
-        Snackbar snackbar = Snackbar
-                .make(tabLayout, message, Snackbar.LENGTH_LONG);
-        if (retry)
-            snackbar.setAction("RETRY", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    controller.getServerStamps();
-                }
-            });
-        snackbar.show();
+    public void showConnectionErrorMessage(Controller.ErrorType type, final String message) {
+        switch (type) {
+            case CONNECTION_ERROR:
+                Snackbar snackbar = Snackbar.make(viewPager, "Unable to connect to server", Snackbar.LENGTH_LONG);
+                snackbar.setAction("Retry", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        controller.getServerStamps();
+                    }
+                });
+                snackbar.show();
+                break;
+            case UNATHORIZED:
+                onLoginFail();
+                break;
+            case BAD_REQUEST:
+                Snackbar.make(viewPager, "Bad request", Snackbar.LENGTH_LONG).show();
+                break;
+            default:
+                Snackbar.make(viewPager, "Unknown error", Snackbar.LENGTH_LONG).show();
+                break;
+        }
     }
 
     public void setDataSet(ArrayList<AndroidStamp> stamps) {
@@ -229,9 +244,8 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         throw new UnsupportedOperationException();
     }
 
-    @Deprecated
     @Override
     public void onLoginFail() {
-        throw new UnsupportedOperationException();
+        Snackbar.make(viewPager, "Unathorized", Snackbar.LENGTH_LONG).show();
     }
 }

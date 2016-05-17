@@ -17,6 +17,7 @@ import java.util.TimeZone;
 
 public class AndroidStamp implements Serializable {
     private Calendar date;
+    private Long time;
     private boolean checkIn;
 
 
@@ -70,5 +71,16 @@ public class AndroidStamp implements Serializable {
      */
     public void setCheckIn(boolean checkIn) {
         this.checkIn = checkIn;
+    }
+
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        setDate(calendar);
     }
 }

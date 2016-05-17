@@ -33,7 +33,7 @@ public class StampsService extends AsyncTask<String, String, AndroidStamp[]>{
      */
     @Override
     protected AndroidStamp[] doInBackground(String... strings) throws RestClientException {
-        AndroidStamp[] retValue = new ServerCommunicationService().getStampsForUser(url, strings[0], strings[1], strings[2], strings[3]);
+        AndroidStamp[] retValue = new ServerCommunicationService(controller).getStampsForUser(url, strings[0], strings[1], strings[2], strings[3]);
         return retValue;
     }
 
