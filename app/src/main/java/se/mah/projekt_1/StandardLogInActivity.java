@@ -1,7 +1,6 @@
 package se.mah.projekt_1;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.design.widget.Snackbar;
@@ -10,15 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -128,7 +123,7 @@ public class StandardLogInActivity extends AppCompatActivity implements View.OnC
     }
 
     public void onLoginFail() {
-        AlertDialog alertDialog = new LoginInFailDialog(this).create("Wrong username or password").create();
+        AlertDialog alertDialog = new CustomDialog(this).create("Login Failed", "Wrong username or password").create();
         alertDialog.show();
         logInButton.setEnabled(true);
         toolbar.setNavigationOnClickListener(this);

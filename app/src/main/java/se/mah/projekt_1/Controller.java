@@ -16,9 +16,13 @@ import java.util.List;
 
 /**
  * Created by Gustaf on 13/04/2016.
+ * Handles most of the logic in the activities
  */
 public class Controller {
 
+    /**
+     * Types of error that can occur
+     */
     public enum ErrorType {
         UNATHORIZED,
         CONNECTION_ERROR,
@@ -30,19 +34,34 @@ public class Controller {
     private CalendarFormatter dateFrom, dateTo;
     private Account user;
     private AsyncTaskCompatible activity;
+    private boolean showSchedule = true;
 
 
+    /**
+     * Constructor
+     * @param activity The activity that uses this controller
+     */
     public Controller(AsyncTaskCompatible activity) {
         this.activity = activity;
     }
 
+    /**
+     * Returns the activity that this controller uses
+     * @return the activity
+     */
     public AsyncTaskCompatible getActivity() {
         return activity;
     }
 
+    /**
+     * Empty constructor
+     */
     public Controller() {
     }
 
+    /**
+     * Gets the Timestamps from the server
+     */
     public void getServerStamps() {
         activity.startLoadingAnimation();
         new StampsService(this).execute(
@@ -52,14 +71,20 @@ public class Controller {
                 String.valueOf(dateTo.getCalendar().getTimeInMillis()));
     }
 
+    /**
+     * Gets the schedule from the server
+     */
     public void getSchedule() {
-        activity.startLoadingAnimation();
         new ScheduleService(this).execute(user.getEncryptedUserCredentials(),
                 user.getId(),
                 String.valueOf(dateFrom.getCalendar().getTimeInMillis()),
                 String.valueOf(dateTo.getCalendar().getTimeInMillis()));
     }
 
+    /**
+     * Parses the savedInstance to retrieve saved data
+     * @param savedInstance savedInstance
+     */
     public void parseSavedInstance(Bundle savedInstance) {
         dataSet = new ArrayList<>();
         long[] dataSetDatesArray = savedInstance.getLongArray("ALLTIMES");
@@ -77,21 +102,41 @@ public class Controller {
         dateTo = new CalendarFormatter(calendarTo);
     }
 
+    /**
+     * Login with username and password
+     * @param username the username
+     * @param password the password
+     */
     public void login(String username, String password) {
         activity.startLoadingAnimation();
         new LoginService(this).execute(username, password);
     }
 
+    /**
+     * Login with encrypted user credentials
+     * @param encryptedUserCredentials user credentials to use for login
+     */
     public void login(String encryptedUserCredentials) {
         activity.startLoadingAnimation();
         new LoginService(this).execute(encryptedUserCredentials);
     }
 
+    /**
+     * Starts a new activity
+     * @param context from what activity
+     * @param newActivity to what activity
+     */
     public void startNewActivity(Context context, Class newActivity) {
         Intent intent = new Intent(context, newActivity);
         context.startActivity(intent);
     }
 
+    /**
+     * Starts a new activity and sends user as an extra
+     * @param context from what activity
+     * @param newActivity to what activity
+     * @param user the user to send
+     */
     public void startNewActivity(Context context, Class newActivity, Account user) {
 
         Bundle bundle = new Bundle();
@@ -102,10 +147,18 @@ public class Controller {
         context.startActivity(intent);
     }
 
+    /**
+     * Parses the userInformation sent via an intent
+     * @param userInformation
+     */
     public void parseUserInformation(Bundle userInformation) {
         user = (Account) userInformation.getSerializable("user");
     }
 
+    /**
+     * Returns the date from which to retrieve timestamps and schedule
+     * @return the date
+     */
     public CalendarFormatter getDateFrom() {
         if (dateFrom == null) {
             Calendar calendarFrom = Calendar.getInstance();
@@ -115,6 +168,10 @@ public class Controller {
         return dateFrom;
     }
 
+    /**
+     * Returns the date to which to retrieve timestamps and schedule
+     * @return the date
+     */
     public CalendarFormatter getDateTo() {
         if (dateTo == null) {
             Calendar calendarTo = Calendar.getInstance();
@@ -124,25 +181,39 @@ public class Controller {
         return dateTo;
     }
 
+    /**
+     * When nav drawer is closed update the timespan and refresh
+     */
     public void navDrawerClosed() {
         ((MainActivity) activity).updateDateSpan();
         getServerStamps();
     }
 
+    /**
+     * Sets the from date
+     * @param dateFrom from
+     */
     public void onDateFromSet(CalendarFormatter dateFrom) {
         if (dateFrom != null)
             this.dateFrom = dateFrom;
         ((MainActivity) activity).setEtFrom(getDateFrom().toString());
     }
 
+    /**
+     * Sets the to date
+     * @param dateTo to
+     */
     public void onDateToSet(CalendarFormatter dateTo) {
         if (dateTo != null)
             this.dateTo = dateTo;
         ((MainActivity) activity).setEtTo(getDateTo().toString());
     }
 
+    /**
+     * When the asynctask is finished
+     * @param stamps the new timestamps
+     */
     public void finishedLoading(AndroidStamp[] stamps) {
-        activity.stopLoadingAnimation();
         dataSet.clear();
         int i = 0;
         for (AndroidStamp stamp : stamps) {
@@ -150,10 +221,18 @@ public class Controller {
             Log.v("STAMP: " + i++, stamp.toString());
         }
         Collections.sort(dataSet, new AndroidStampSortDescending());
-        activity.dataRecieved(dataSet);
-        getSchedule();
+        if(!showSchedule) {
+            activity.stopLoadingAnimation();
+            activity.dataRecieved(dataSet);
+        }
+        else
+            getSchedule();
     }
 
+    /**
+     * When the asynctask is finished
+     * @param stamps the new schedule stamps
+     */
     public void finishedLoading(ScheduleStamp[] stamps) {
         activity.stopLoadingAnimation();
         schedule.clear();
@@ -165,6 +244,10 @@ public class Controller {
         activity.dataRecieved(dataSet);
     }
 
+    /**
+     * When the asynctask is finished
+     * @param user the user logged in as
+     */
     public void finishedLoading(Account user) {
         activity.stopLoadingAnimation();
 
@@ -172,14 +255,28 @@ public class Controller {
             activity.onLoginSuccess(user);
     }
 
+    /**
+     * Show a connection error
+     * @param type what type of error
+     * @param message message
+     */
     public void showConnectionErrorMessage(ErrorType type, String message) {
         activity.showConnectionErrorMessage(type, message);
     }
 
+    /**
+     * Returns the user
+     * @return user
+     */
     public Account getUser() {
         return user;
     }
 
+    /**
+     * Gets the relevant graphevents and returns them in a list
+     * @param selectedDay the day of which to get the graphevents
+     * @return the events
+     */
     public ArrayList<WeekViewEvent> getGraphEvents(Calendar selectedDay) {
         if (selectedDay == null)
             selectedDay = Calendar.getInstance();
@@ -272,13 +369,36 @@ public class Controller {
         return stamps;
     }
 
+    /**
+     * Sort the timestamps ascending
+     */
     public void sortAscending() {
         Collections.sort(dataSet, new AndroidStampSortAscending());
         ((MainActivity) activity).setDataSet(dataSet);
     }
 
+    /**
+     * Sort the timestamps descending
+     */
     public void sortDescending() {
         Collections.sort(dataSet, new AndroidStampSortDescending());
         ((MainActivity) activity).setDataSet(dataSet);
+    }
+
+    /**
+     * Show the schedule?
+     * @return true if schedule is shown
+     */
+    public boolean isShowSchedule() {
+        return showSchedule;
+    }
+
+    /**
+     * Sets whether the schedule should be shown
+     * @param showSchedule true of shedule should be shown
+     */
+    public void setShowSchedule(boolean showSchedule) {
+        this.showSchedule = showSchedule;
+        getServerStamps();
     }
 }

@@ -6,19 +6,30 @@ import android.support.v7.app.AlertDialog;
 
 /**
  * Created by Gustaf on 20/04/2016.
+ * Builds a custom dialog
  */
-public class LoginInFailDialog {
+public class CustomDialog {
 
     private Context context;
 
-    public LoginInFailDialog(Context context) {
+    /**
+     * Constructor
+     * @param context where the dialog will be shown
+     */
+    public CustomDialog(Context context) {
         this.context = context;
     }
 
-    public AlertDialog.Builder create(String message) {
+    /**
+     * Creates an AlertDialog
+     * @param title the title in the dialog
+     * @param message the message in the dialog
+     * @return An AlertDialogBuilder
+     */
+    public AlertDialog.Builder create(String title, String message) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setMessage(message);
-        alertDialogBuilder.setTitle("Login failed");
+        alertDialogBuilder.setTitle(title);
         alertDialogBuilder.setPositiveButton("OK", null);
         return alertDialogBuilder;
     }

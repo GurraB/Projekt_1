@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Gustaf on 06/04/2016.
- * Handles the actions between the Activity and the components in the fragment
+ * A Fragment containing a log with all the timestamps
  */
 public class LogFragment extends Fragment {
 
@@ -43,11 +43,22 @@ public class LogFragment extends Fragment {
         return new LogFragment();
     }
 
+    /**
+     * OnCreate
+     * @param savedInstanceState savedInstance
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Called when the view is created, initializes components etc
+     * @param inflater LayoutInflater
+     * @param container Viewgroup
+     * @param savedInstanceState savedInstance
+     * @return rootView
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +90,9 @@ public class LogFragment extends Fragment {
         recyclerView.swapAdapter(new RecyclerViewAdapter(dataSet), false);
     }
 
+    /**
+     * Start the swipe to refresh loading animation
+     */
     public void startLoadingAnim() {
         if(progressBar != null && !swipeRefreshLayout.isRefreshing())
             progressBar.setVisibility(View.VISIBLE);
@@ -86,6 +100,9 @@ public class LogFragment extends Fragment {
             recyclerView.setAdapter(new RecyclerViewAdapter(new ArrayList<AndroidStamp>()));
     }
 
+    /**
+     * Stop the swipe to refresh loading animation
+     */
     public void stopLoadingAnim() {
         if(progressBar != null)
             progressBar.setVisibility(View.GONE);

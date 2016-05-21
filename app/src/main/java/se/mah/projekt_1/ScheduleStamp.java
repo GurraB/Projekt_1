@@ -1,13 +1,14 @@
 package se.mah.projekt_1;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.Serializable;
 
 /**
  * Created by Gustaf on 05/05/2016.
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = ScheduleStampSerializer.class)
 public class ScheduleStamp implements Serializable {
 
     private long from;

@@ -1,30 +1,33 @@
 package se.mah.projekt_1;
 
-import android.text.format.DateFormat;
-import android.util.Log;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 /**
  * Created by Gustaf on 06/04/2016.
  * A timestamp containing time and whether it is check out or in
  */
 
+@JsonDeserialize(using = AndroidStampSerializing.class)
 public class AndroidStamp implements Serializable {
     private Calendar date;
     private Long time;
     private boolean checkIn;
 
 
+    /**
+     * Empty constructor
+     */
     public AndroidStamp() {
 
     }
 
+    /**
+     * Returns a readable string about the timestamp
+     * @return a readable string about the timestamp
+     */
     public String toString() {
         CalendarFormatter formatter = new CalendarFormatter(date);
         return "AndroidStamp: " + formatter.toStringNoYearWithTime() + " | " + checkIn;
@@ -73,10 +76,18 @@ public class AndroidStamp implements Serializable {
         this.checkIn = checkIn;
     }
 
+    /**
+     * Returns the time as a Long value
+     * @return
+     */
     public Long getTime() {
         return time;
     }
 
+    /**
+     * Sets the time
+     * @param time time in milliseconds
+     */
     public void setTime(Long time) {
         this.time = time;
         Calendar calendar = Calendar.getInstance();

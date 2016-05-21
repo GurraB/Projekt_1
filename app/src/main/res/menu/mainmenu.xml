@@ -6,17 +6,17 @@
 
     <item
         android:id="@+id/refresh_button"
-        android:orderInCategory="1"
-        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_refresh_white2_24dp"
-        android:title="@string/refresh" />
+        android:orderInCategory="1"
+        android:title="@string/refresh"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/sort_button"
-        android:orderInCategory="2"
-        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_sort_white_24dp"
-        android:title="@string/sort">
+        android:orderInCategory="2"
+        android:title="@string/sort"
+        app:showAsAction="ifRoom">
 
         <menu>
             <item
@@ -26,14 +26,22 @@
             <item
                 android:id="@+id/sort_newest_first"
                 android:orderInCategory="2"
-                android:title="@string/sort_newest_first"/>
+                android:title="@string/sort_newest_first" />
         </menu>
 
-        </item>
+    </item>
+
+    <item
+        android:id="@+id/show_schedule"
+        android:checkable="true"
+        android:checked="false"
+        android:orderInCategory="3"
+        android:title="Show schedule"
+        app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/logout"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         android:title="logout"
         app:showAsAction="collapseActionView" />
 

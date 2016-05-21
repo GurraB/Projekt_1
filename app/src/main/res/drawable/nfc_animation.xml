@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/nfc_scan_1" android:duration="200"/>
-    <item android:drawable="@drawable/nfc_scan_2" android:duration="200"/>
-    <item android:drawable="@drawable/nfc_scan_3" android:duration="200"/>
-    <item android:drawable="@drawable/nfc_scan_4" android:duration="200"/>
-    <item android:drawable="@drawable/nfc_scan_5" android:duration="200"/>
-</animation-list>

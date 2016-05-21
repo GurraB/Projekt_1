@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Gustaf on 06/04/2016.
- * The activity after the login. This acts as a Controller for the LogFragment and the GraphFragment
+ * The activity after the login. Holds the LogFragment and the GraphFragment
  */
 
 public class MainActivity extends AppCompatActivity implements AsyncTaskCompatible {
@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private ViewPager viewPager;
     private DrawerLayout drawer;
     private RelativeLayout left_drawer;
-    private MenuItem sort;
     private ActionHandler actionHandler;
     private LogFragment logFragment;
     private GraphFragment graphFragment;
@@ -42,6 +41,10 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     private EditText etFrom;
     private EditText etTo;
 
+    /**
+     * OnCreate, initializes everything and retrieves savedInstances etc.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,12 +58,9 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     }
 
     private void initComponents() {
-        //om den inte har bundle?
         Bundle userInformation = getIntent().getBundleExtra("userInformation");
         if (userInformation != null)
             controller.parseUserInformation(userInformation);
-        else
-            Log.v("MAINACTIVITY", "BUNDLE IS NULL");
 
         findComponents();
         actionHandler = new ActionHandler(this, drawer, left_drawer, toolbar, R.string.open_drawer_string, R.string.close_drawer_string, controller);
@@ -82,14 +82,23 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         tabLayout = (TabLayout) findViewById(R.id.tab);
     }
 
+    /**
+     * Creates the menu
+     * @param menu the menu to be applied to the activity
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.v("MENU CREATED", "CANCEEEER");
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.mainmenu, menu);
         return true;
     }
 
+    /**
+     * Handles the events when buttons in the menu is pressed
+     * @param item the pressed button
+     * @return true
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -108,10 +117,18 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
                 controller.startNewActivity(this, StandardLogInActivity.class);
                 finish();
                 break;
+            case R.id.show_schedule:
+                controller.setShowSchedule(!controller.isShowSchedule());
+                item.setChecked(controller.isShowSchedule());
+                break;
         }
         return true;
     }
 
+    /**
+     * When the activity is Paused it saves the current data
+     * @param outState Bundle to put data in
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         long[] dataSetDatesArray = new long[dataSet.size()];
@@ -127,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         super.onSaveInstanceState(outState);
     }
 
-    public void setUpToolbar() {
+    private void setUpToolbar() {
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_date_range_white2_24dp);
         toolbar.setNavigationOnClickListener(actionHandler);
@@ -172,21 +189,31 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         tabLayout.getTabAt(1).setCustomView(graphView);
     }
 
+    /**
+     * Sets the text in the from EditText in the navdrawer
+     * @param from text
+     */
     public void setEtFrom(String from) {
         etFrom.setText(from);
     }
 
+    /**
+     * Sets the text in the to EditText in the navdrawer
+     * @param to text
+     */
     public void setEtTo(String to) {
         etTo.setText(to);
     }
 
+    /**
+     * Returns the actionhandler for the activity
+     * @return
+     */
     public ActionHandler getActionHandler() {
         return actionHandler;
     }
 
-    /**
-     * Shows a snackbar displaying that the server can't be reached
-     */
+
     @Override
     public void showConnectionErrorMessage(Controller.ErrorType type, final String message) {
         switch (type) {
@@ -226,14 +253,23 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
         logFragment.startLoadingAnim();
     }
 
+    /**
+     * Stops the loading animation
+     */
     public void stopLoadingAnimation() {
         logFragment.stopLoadingAnim();
     }
 
+    /**
+     * Updates the date span in the title
+     */
     public void updateDateSpan() {
         toolbar.setTitle(controller.getDateFrom().toStringNoYear() + " - " + controller.getDateTo().toStringNoYear());
     }
 
+    /**
+     * Loads the graph with the graphevents
+     */
     public void loadGraph() {
         graphFragment.showGraph();
     }

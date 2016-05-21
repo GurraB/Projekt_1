@@ -126,11 +126,11 @@ public class ServerCommunicationService {
         HttpEntity<String> requestEntity = createHttpEntity(encryptedUserCredentials);
 
         //Temporary url TODO change to URIComponentBuilder
-        /*url += "&";
+        url += "&";
         url += "from=" + from;
         url += "&to=" + to;
-        url += "&id=" + id;*/
-        url = buildURI(url, from, to, id);
+        url += "&id=" + id;
+        //url = buildURI(url, from, to, id);
 
         ScheduleStamp[] stamps = new ScheduleStamp[0];
         try {

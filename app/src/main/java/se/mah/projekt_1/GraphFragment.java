@@ -26,6 +26,7 @@ import static se.mah.projekt_1.R.style.AppTheme;
 
 /**
  * Created by Gustaf on 06/04/2016.
+ * A Fragment that shows a graph
  */
 public class GraphFragment extends Fragment {
 
@@ -35,25 +36,48 @@ public class GraphFragment extends Fragment {
     private EditText etDate;
     private Calendar selectedDay = Calendar.getInstance();
 
+    /**
+     * Constructor for the Fragment, use newInstance instead
+     */
     public GraphFragment() {
         super();
     }
 
+    /**
+     * Creates a new Instance of the Fragment
+     * @param controller the controller to use
+     * @return An instance of this fragment
+     */
     public static GraphFragment newInstance(Controller controller) {
         GraphFragment graphFragment = new GraphFragment();
         graphFragment.setController(controller);
         return graphFragment;
     }
 
+    /**
+     * Sets the controller
+     * @param controller
+     */
     public void setController(Controller controller) {
         this.controller = controller;
     }
 
+    /**
+     * OnCreate
+     * @param savedInstanceState savedInstance
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * When the view is created, initializes components etc.
+     * @param inflater LayoutInflater
+     * @param container ViewGroup
+     * @param savedInstanceState SavedInstance
+     * @return the rootView
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,6 +107,9 @@ public class GraphFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Update and Show the graph
+     */
     public void showGraph() {
         ArrayList<WeekViewEvent> graphEvents = controller.getGraphEvents(selectedDay);
         Log.v("AMOUNT OF EVENTS", "WEEKVIEW EVENTS: " + String.valueOf(graphEvents.size()));

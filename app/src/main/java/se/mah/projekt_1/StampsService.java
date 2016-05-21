@@ -7,6 +7,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.LinkedHashMap;
+
 /**
  * Created by Gustaf on 07/04/2016.
  * StampsService talks to the server and retrieves all necessary data in a separate thread
