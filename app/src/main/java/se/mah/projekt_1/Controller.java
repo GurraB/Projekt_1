@@ -274,23 +274,57 @@ public class Controller {
 
     /**
      * Gets the relevant graphevents and returns them in a list
-     * @param selectedDay the day of which to get the graphevents
      * @return the events
      */
-    public ArrayList<WeekViewEvent> getGraphEvents(Calendar selectedDay) {
-        if (selectedDay == null)
-            selectedDay = Calendar.getInstance();
-        ArrayList<AndroidStamp> stamps = getStampsForDay(selectedDay);
-        ArrayList<ScheduleStamp> scheduleStamps = getScheduleForDay(selectedDay);
-        Collections.sort(stamps, new AndroidStampSortAscending());
-        if (stamps == null)
-            stamps = new ArrayList();
-        if(schedule == null)
-            scheduleStamps = new ArrayList<>();
-        ArrayList<WeekViewEvent> events = new ArrayList<>();
+    public ArrayList<GraphEvent> getGraphEvents() {
+        ArrayList<ScheduleStamp> scheduleStamps = new ArrayList<>(schedule);
+        ArrayList<AndroidStamp> androidStamps = new ArrayList<>(dataSet);
+        Collections.sort(androidStamps, new AndroidStampSortAscending());
+        ArrayList<GraphEvent> events = new ArrayList<>();
+        for (ScheduleStamp scheduleStamp : scheduleStamps) {
+            Calendar startTime = Calendar.getInstance();
+            startTime.setTimeInMillis(scheduleStamp.getFrom());
+            Calendar endTime = Calendar.getInstance();
+            endTime.setTimeInMillis(scheduleStamp.getTo());
+            String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
+            GraphEvent event = new GraphEvent(scheduleStamp.getFrom(), scheduleStamp.getTo(), false, title);
+            events.add(event);
+        }
 
-        if(stamps.size() > 0) {
-            if(!stamps.get(0).isCheckIn()) {
+        if(androidStamps.size() > 0) {
+            if(!androidStamps.get(0).isCheckIn()) {
+                Calendar startTime = Calendar.getInstance();
+                Calendar endTime = Calendar.getInstance();
+                startTime.setTimeInMillis(androidStamps.get(0).getTime());
+                startTime.set(Calendar.HOUR_OF_DAY, 0);
+                startTime.set(Calendar.MINUTE, 0);
+                startTime.set(Calendar.SECOND, 1);
+                endTime.setTimeInMillis(androidStamps.get(0).getTime());
+                String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
+                GraphEvent event = new GraphEvent(startTime.getTimeInMillis(), endTime.getTimeInMillis(), true, title);
+                events.add(event);
+            }
+
+            for (int i = 1; i < androidStamps.size(); i++) {
+                Calendar startTime = Calendar.getInstance();
+                Calendar endTime = Calendar.getInstance();
+                startTime.setTimeInMillis(androidStamps.get(i).getTime());
+                if (i + 1 < androidStamps.size())
+                    endTime.setTimeInMillis(androidStamps.get(i).getTime());
+                else {
+                    endTime.setTimeInMillis(androidStamps.get(i).getTime());
+                    endTime.set(Calendar.HOUR_OF_DAY, 23);
+                    endTime.set(Calendar.MINUTE, 59);
+                    endTime.set(Calendar.SECOND, 59);
+                }
+                String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
+                GraphEvent event = new GraphEvent(startTime.getTimeInMillis(), endTime.getTimeInMillis(), true, title);
+                events.add(event);
+            }
+        }
+
+        /*if(androidStamps.size() > 0) {
+            if(!androidStamps.get(0).isCheckIn()) {
                 Calendar checkIn = Calendar.getInstance();
                 checkIn.setTimeInMillis(selectedDay.getTimeInMillis());
                 checkIn.set(Calendar.HOUR_OF_DAY, 0);
@@ -315,8 +349,7 @@ public class Controller {
                 endTime = stamps.get(i + 1).getDate();
             }
             String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
-            WeekViewEvent event = new WeekViewEvent(1, title, startTime, endTime);
-            event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorPrimaryLight));
+            GraphEvent event = new GraphEvent(startTime.getTimeInMillis(), endTime.getTimeInMillis(), true, title);
             events.add(event);
         }
         for (int i = 0; i < scheduleStamps.size(); i++) {
@@ -325,10 +358,9 @@ public class Controller {
             startTime.setTimeInMillis(scheduleStamps.get(i).getFrom());
             endTime.setTimeInMillis(scheduleStamps.get(i).getTo());
             String title = formatTime(String.valueOf(startTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(startTime.get(Calendar.MINUTE))) + "-" + formatTime(String.valueOf(endTime.get(Calendar.HOUR_OF_DAY))) + ":" + formatTime(String.valueOf(endTime.get(Calendar.MINUTE)));
-            WeekViewEvent event = new WeekViewEvent(2, title, startTime, endTime);
-            event.setColor(((MainActivity) activity).getResources().getColor(R.color.colorSchedule));
+            GraphEvent event = new GraphEvent(startTime.getTimeInMillis(), endTime.getTimeInMillis(), false, title);
             events.add(event);
-        }
+        }*/
         return events;
     }
 

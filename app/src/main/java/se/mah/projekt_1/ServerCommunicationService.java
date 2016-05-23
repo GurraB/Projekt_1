@@ -145,6 +145,10 @@ public class ServerCommunicationService {
     private RestTemplate createRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        SimpleClientHttpRequestFactory a = new SimpleClientHttpRequestFactory();
+        a.setConnectTimeout(3000);
+        a.setReadTimeout(3000);
+        restTemplate.setRequestFactory(a);
         return restTemplate;
     }
 

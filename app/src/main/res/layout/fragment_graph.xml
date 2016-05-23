@@ -18,24 +18,14 @@
         android:textAlignment="center"
         android:editable="false"/>
 
-    <se.mah.projekt_1.FixedCalendarView
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <se.mah.projekt_1.VisualSchedule
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:textSize="12sp"
-            app:hourHeight="40dp"
-            app:maxHourHeight="600dp"
-            app:headerColumnPadding="8dp"
-            app:headerColumnTextColor="#804b60d7"
-            app:headerRowPadding="12dp"
-            app:columnGap="8dp"
-            app:noOfVisibleDays="1"
-            app:overlappingEventGap="5dp"
-            app:headerRowBackgroundColor="#ffefefef"
-            app:dayBackgroundColor="#ffefefef"
-            app:todayBackgroundColor="#ffefefef"
-            app:headerColumnBackground="#ffefefef"
-            app:eventTextColor="@color/colorText"
-        />
-
+            android:layout_height="wrap_content"
+            app:backgroundColor="@android:color/background_light"
+            app:hourHeightz="60"/>
+    </ScrollView>
 </LinearLayout>

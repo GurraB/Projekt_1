@@ -32,7 +32,7 @@ public class GraphFragment extends Fragment {
 
     private Controller controller;
     private CalendarViewListener listener;
-    private FixedCalendarView calendarView;
+    private VisualSchedule calendarView;
     private EditText etDate;
     private Calendar selectedDay = Calendar.getInstance();
 
@@ -82,7 +82,7 @@ public class GraphFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_graph, container, false);
-        calendarView = (FixedCalendarView) rootView.findViewById(R.id.calendarView);
+        calendarView = (VisualSchedule) rootView.findViewById(R.id.calendarView);
         etDate = (EditText) rootView.findViewById(R.id.etGraphDate);
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +93,6 @@ public class GraphFragment extends Fragment {
                         selectedDay.set(Calendar.YEAR, i);
                         selectedDay.set(Calendar.MONTH, i1);
                         selectedDay.set(Calendar.DAY_OF_MONTH, i2);
-                        calendarView.goToDate(selectedDay);
                         showGraph();
                     }
                 },
@@ -102,7 +101,6 @@ public class GraphFragment extends Fragment {
             }
         });
         listener = new CalendarViewListener(new ArrayList<WeekViewEvent>());
-        calendarView.setMonthChangeListener(listener);
         etDate.setText(new CalendarFormatter(selectedDay).toStringNoYear());
         return rootView;
     }
@@ -111,13 +109,10 @@ public class GraphFragment extends Fragment {
      * Update and Show the graph
      */
     public void showGraph() {
-        ArrayList<WeekViewEvent> graphEvents = controller.getGraphEvents(selectedDay);
+        ArrayList<GraphEvent> graphEvents = controller.getGraphEvents();
         Log.v("AMOUNT OF EVENTS", "WEEKVIEW EVENTS: " + String.valueOf(graphEvents.size()));
-        listener.setEvents(graphEvents);
-        calendarView.notifyDatasetChanged();
+        calendarView.notifyDataChanged(graphEvents);
         etDate.setText(new CalendarFormatter(selectedDay).toStringNoYear());
-        if(graphEvents.size() != 0)
-            calendarView.goToHour(graphEvents.get(0).getStartTime().get(Calendar.HOUR_OF_DAY));
     }
 
 }
