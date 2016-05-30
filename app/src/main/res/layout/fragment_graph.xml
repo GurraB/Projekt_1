@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:context="se.mah.projekt_1.GraphFragment">
+    tools:context=".Fragments.GraphFragment">
 
     <EditText
         android:id="@+id/etGraphDate"
@@ -21,11 +21,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <se.mah.projekt_1.VisualSchedule
+        <se.mah.projekt_1.Views.VisualSchedule
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:backgroundColor="@android:color/background_light"
-            app:hourHeightz="60"/>
+            app:backgroundColor="#FFEEEEEE"
+            app:stampColor="@color/colorPrimaryLight"
+            app:scheduleColor="@color/colorAccentFaded"
+            app:hourHeight="60"/>
     </ScrollView>
 </LinearLayout>

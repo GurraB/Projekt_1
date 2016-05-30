@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryLight">#BBDEFB</color>
+    <color name="colorPrimaryLight">#aabbdefb</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#FF5722</color>
     <color name="colorText">#FFFFFF</color>
@@ -19,15 +19,15 @@
     <color name="c1">#2196F3</color>
     <color name="c2">#4CAF50</color>
     <color name="c3">#FF9800</color>
-    <color name="c4">#EC407A</color>
-    <color name="c5">#26A69A</color>
+    <color name="c4">#EC407A</color><!--ful-->
+    <color name="c5">#26A69A</color><!--ful-->
     <color name="c6">#FFEB3B</color>
 
-    <color name="c7">#ff1744</color>
-    <color name="c8">#26A69A</color>
-    <color name="c9">#00E5FF</color>
-    <color name="c10">#76FF03</color>
-    <color name="c11">#FFEA00</color>
-    <color name="c12">#FF9100</color>
-    <color name="c13">#8D6E63</color>
+    <color name="c7">#007aaf</color>
+    <color name="c8">#4cd964</color>
+    <color name="c9">#00BCD4</color><!--ful-->
+    <color name="c10">#ff9500</color>
+    <color name="c11">#ff3b30</color>
+    <color name="c12">#ffcc00</color>
+    <color name="c13">#8e8e93</color>
 </resources>
