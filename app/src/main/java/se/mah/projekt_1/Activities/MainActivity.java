@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements AsyncTaskCompatib
     }
 
     /**
-     * Updates the date span in the title
+     * Updates the date span in the titl
      */
     public void updateDateSpan() {
         toolbar.setTitle(controller.getDateFrom().toStringNoYear() + " - " + controller.getDateTo().toStringNoYear());
